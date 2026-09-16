@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
+  <title>TypeShuttle</title>
+  <defs>
+    <mask id="typeshuttle-keycap-gap" maskUnits="userSpaceOnUse" x="0" y="0" width="128" height="128">
+      <rect width="128" height="128" fill="#fff"/>
+      <rect x="0" y="48" width="80" height="80" rx="22" fill="#000"/>
+    </mask>
+  </defs>
+  <rect x="41" y="13" width="74" height="66" rx="12" fill="none" stroke="#139aa9" stroke-width="10" mask="url(#typeshuttle-keycap-gap)"/>
+  <rect x="8" y="64" width="64" height="56" rx="16" fill="#0a4f59"/>
+  <rect x="8" y="56" width="64" height="56" rx="16" fill="#0e6f7c"/>
+  <path d="M28 96 50 74M34 74h16v16" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

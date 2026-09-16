@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <title>TypeShuttle</title>
+  <link rel="stylesheet" href="tokens.css">
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <header class="top">
+    <span class="brand">TypeShuttle</span>
+    <span id="site" class="site muted"></span>
+    <button id="open-options" type="button" class="link">設定</button>
+  </header>
+
+  <main>
+    <section id="state" class="state" hidden>
+      <h1 id="state-title"></h1>
+      <p id="state-body" class="muted"></p>
+      <button id="state-action" type="button" class="primary" hidden></button>
+    </section>
+
+    <section id="ready" class="ready" hidden>
+      <p id="remaining-banner" class="notice warn" hidden>
+        已載入上次中止時還沒送出的內容。
+        <button id="clear-remaining" type="button" class="link">清除</button>
+      </p>
+
+      <div class="modes" role="tablist" aria-label="送出方式">
+        <button id="mode-direct" type="button" role="tab" aria-selected="true" aria-controls="ready">直接打字</button>
+        <button id="mode-precise" type="button" role="tab" aria-selected="false" aria-controls="ready">精確傳輸</button>
+      </div>
+
+      <p id="precise-note" class="muted small" hidden>
+        接收端必須是遠端的 bash 終端機，請先把遠端游標放在提示字元後面。內容會壓縮後以 base64 送出，完整保留每個位元組。
+      </p>
+
+      <textarea id="text" rows="7" spellcheck="false" placeholder="貼上要送出的文字" aria-label="要送出的內容"></textarea>
+
+      <div id="file-row" class="file-row" hidden>
+        <label for="file">或選擇檔案</label>
+        <input id="file" type="file">
+        <button id="clear-file" type="button" class="link" hidden>移除檔案</button>
+      </div>
+
+      <p id="stats" class="stats"></p>
+
+      <div id="direct-options" class="options">
+        <label class="check"><input id="send-tab" type="checkbox"> 這次送出 Tab 鍵（Makefile 等）</label>
+        <label class="inline" for="newline-key">換行鍵
+          <select id="newline-key">
+            <option value="enter">Enter</option>
+            <option value="shift-enter">Shift+Enter（聊天程式）</option>
+          </select>
+        </label>
+      </div>
+
+      <dl id="precise-details" class="details" hidden>
+        <div><dt>存到遠端</dt><dd id="detail-path" class="mono"></dd></div>
+        <div><dt>原始大小</dt><dd id="detail-size"></dd></div>
+        <div><dt>需要打字</dt><dd id="detail-lines"></dd></div>
+        <div><dt>sha256</dt><dd id="detail-sha" class="mono hash"></dd></div>
+      </dl>
+
+      <p id="warning" class="notice" hidden></p>
+
+      <button id="send" type="button" class="primary send">送出到遠端</button>
+      <p class="hint muted">在遠端桌面分頁按 <span id="hotkey-hint"><kbd>Ctrl</kbd> <kbd>Shift</kbd> <kbd>V</kbd></span> 可直接送出剪貼簿。</p>
+    </section>
+  </main>
+
+  <script type="module" src="popup.js"></script>
+</body>
+</html>

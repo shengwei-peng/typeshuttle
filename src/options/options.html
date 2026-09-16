@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>TypeShuttle 設定</title>
+  <link rel="stylesheet" href="tokens.css">
+  <link rel="stylesheet" href="options.css">
+</head>
+<body>
+  <main class="page">
+    <header class="head">
+      <p class="brand">TypeShuttle</p>
+      <h1>設定</h1>
+      <p id="save-status" class="save-status muted" role="status"></p>
+    </header>
+
+    <form id="settings-form" novalidate>
+      <section aria-labelledby="h-speed">
+        <h2 id="h-speed">送出速度</h2>
+        <p class="muted">遠端出現漏字時，改用較慢的檔位。</p>
+        <div class="choices">
+          <label><input type="radio" name="speed" value="fast"> <strong>快</strong><span class="muted">網路穩定、內容不長時</span></label>
+          <label><input type="radio" name="speed" value="normal"> <strong>標準</strong><span class="muted">建議</span></label>
+          <label><input type="radio" name="speed" value="safe"> <strong>保守</strong><span class="muted">遠端反應慢或會漏字時</span></label>
+        </div>
+      </section>
+
+      <section aria-labelledby="h-text">
+        <h2 id="h-text">文字處理（直接打字）</h2>
+        <div class="field">
+          <label for="tabWidth">Tab 轉成幾個空格</label>
+          <input id="tabWidth" name="tabWidth" type="number" min="1" max="8" step="1">
+        </div>
+        <div class="field">
+          <label for="newlineKey">預設換行鍵</label>
+          <select id="newlineKey" name="newlineKey">
+            <option value="enter">Enter</option>
+            <option value="shift-enter">Shift+Enter（遠端聊天程式）</option>
+          </select>
+        </div>
+        <label class="check">
+          <input id="keepTrailingNewline" name="keepTrailingNewline" type="checkbox">
+          <span>保留結尾換行 <span class="muted">（關閉時，最後一行送完不會按 Enter，避免終端機直接執行）</span></span>
+        </label>
+      </section>
+
+      <section aria-labelledby="h-limits">
+        <h2 id="h-limits">確認與上限</h2>
+        <div class="field">
+          <label for="confirmCharThreshold">超過幾個字要先確認</label>
+          <input id="confirmCharThreshold" name="confirmCharThreshold" type="number" min="0" step="1">
+          <p class="help muted">多行內容一律先確認。</p>
+        </div>
+        <div class="field">
+          <label for="suggestPreciseChars">超過幾個字建議改用精確傳輸</label>
+          <input id="suggestPreciseChars" name="suggestPreciseChars" type="number" min="0" step="1">
+        </div>
+        <div class="field">
+          <label for="maxDirectChars">直接打字上限（字）</label>
+          <input id="maxDirectChars" name="maxDirectChars" type="number" min="1" step="1">
+        </div>
+        <div class="field">
+          <label for="maxPreciseKb">精確傳輸上限（KB）</label>
+          <input id="maxPreciseKb" name="maxPreciseKb" type="number" min="1" max="20480" step="1">
+        </div>
+      </section>
+
+      <section aria-labelledby="h-precise">
+        <h2 id="h-precise">精確傳輸</h2>
+        <div class="field">
+          <label for="preciseDir">遠端存檔目錄</label>
+          <input id="preciseDir" name="preciseDir" type="text" spellcheck="false" autocomplete="off">
+          <p class="help muted">只能使用英數字與 <code>. _ - /</code>，可用 <code>~/</code> 開頭，例如 <code>~/typeshuttle-inbox</code>。</p>
+        </div>
+      </section>
+    </form>
+
+    <section aria-labelledby="h-sites">
+      <h2 id="h-sites">已啟用的網站</h2>
+      <p class="muted">TypeShuttle 只在這些網站上運作。移除後會一併收回權限。</p>
+      <ul id="site-list" class="site-list"></ul>
+      <p id="site-empty" class="muted" hidden>還沒有啟用任何網站。在遠端桌面分頁點工具列的 TypeShuttle 圖示即可啟用。</p>
+    </section>
+
+    <section aria-labelledby="h-hotkey">
+      <h2 id="h-hotkey">快捷鍵</h2>
+      <p>在遠端桌面分頁按 <kbd>Ctrl</kbd> <kbd>Shift</kbd> <kbd>V</kbd>（Mac：<kbd>Cmd</kbd> <kbd>Shift</kbd> <kbd>V</kbd>），會把剪貼簿的文字打進遠端。</p>
+      <p class="muted">送出中按任意鍵或點一下畫面即可中止。</p>
+    </section>
+  </main>
+  <script type="module" src="options.js"></script>
+</body>
+</html>

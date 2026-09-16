@@ -1,0 +1,96 @@
+name: Client compatibility report
+description: Tell us how TypeShuttle works (or doesn't) with a remote desktop or web console client.
+title: "compat: <client> <version>"
+labels: ["client-compatibility", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Reports from real sessions decide which clients are listed as supported, so both successes and failures help.
+
+        A quick test: enable TypeShuttle on the client's site, open a text editor or terminal on the remote side, and try each item below. Do not include hostnames, URLs, account names or screenshots from a work environment.
+  - type: input
+    id: client
+    attributes:
+      label: Client or product and version
+      description: The remote desktop or console product, and its version if you can find it.
+      placeholder: Proxmox VE 9.0 noVNC console
+    validations:
+      required: true
+  - type: dropdown
+    id: hosting
+    attributes:
+      label: Hosting
+      options:
+        - Self-hosted
+        - Cloud service
+        - Hardware management controller (for example a server's KVM console)
+        - Not sure
+    validations:
+      required: true
+  - type: textarea
+    id: access
+    attributes:
+      label: How it is accessed
+      description: The kind of page you open, without the real hostname. For example, "web client launched from a StoreFront page" or "console button in the web UI".
+      placeholder: Web console opened from the VM's Console tab in the management web UI.
+    validations:
+      required: true
+  - type: input
+    id: browser
+    attributes:
+      label: Browser and version
+      placeholder: Edge 153.0.4234.32
+    validations:
+      required: true
+  - type: input
+    id: os
+    attributes:
+      label: Operating systems
+      description: Local OS running the browser, and the remote OS.
+      placeholder: Windows 11 (local), Debian 13 (remote)
+    validations:
+      required: true
+  - type: input
+    id: typeshuttle-version
+    attributes:
+      label: TypeShuttle version
+      placeholder: 0.1.0
+    validations:
+      required: true
+  - type: dropdown
+    id: result
+    attributes:
+      label: Overall result
+      options:
+        - Works
+        - Partially works
+        - Does not work
+    validations:
+      required: true
+  - type: checkboxes
+    id: worked
+    attributes:
+      label: What worked
+      description: Check each item that arrived on the remote side exactly as sent. Leave unchecked if it failed or you did not test it, and explain in the notes.
+      options:
+        - label: Plain ASCII text
+        - label: Multi-line text (newlines arrive as line breaks)
+        - label: CJK text or text with an input method active on the remote side
+        - label: Emoji
+        - label: Tab key
+        - label: Precise transfer (the remote sha256sum matches the one shown in the panel)
+        - label: Hotkey (Ctrl+Shift+V / Cmd+Shift+V)
+        - label: Toolbar panel
+  - type: textarea
+    id: notes
+    attributes:
+      label: Notes
+      description: What failed and how (missing characters, swallowed lines, wrong characters), keyboard layout, remote input method, full-screen or keyboard lock mode, and anything else unusual.
+  - type: checkboxes
+    id: confidentiality
+    attributes:
+      label: Confidentiality
+      options:
+        - label: This report contains no confidential hostnames, URLs, account names or screenshots.
+          required: true

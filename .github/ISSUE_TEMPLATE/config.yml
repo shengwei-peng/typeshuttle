@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Questions and ideas
+    url: https://github.com/shengwei-peng/typeshuttle/discussions
+    about: Ask how to use TypeShuttle or discuss ideas before opening an issue.
+  - name: Report a security vulnerability
+    url: https://github.com/shengwei-peng/typeshuttle/security/advisories/new
+    about: Report security problems privately. Please do not open a public issue.
