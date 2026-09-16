@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16" shape-rendering="crispEdges">
+  <title>TypeShuttle</title>
+  <path d="M5 1h9v1h1v8h-1v1h-3V9h2V3H7v3H5z" fill="#139aa9"/>
+  <path d="M2 8h7v1h1v5H9v1H2v-1H1V9h1z" fill="#0a4f59"/>
+  <path d="M2 7h7v1h1v5H9v1H2v-1H1V8h1z" fill="#0e6f7c"/>
+  <path d="M5 8h3v1H5zM6 9h2v1H6zM5 10h1v1H5zM7 10h1v1H7zM4 11h1v1H4zM3 12h1v1H3z" fill="#fff"/>
+</svg>

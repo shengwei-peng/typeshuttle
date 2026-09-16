@@ -1,0 +1,33 @@
+{
+  "name": "typeshuttle",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Paste into browser-based remote desktops that block the clipboard: a Chrome/Edge extension that types text and files for you.",
+  "license": "Apache-2.0",
+  "homepage": "https://github.com/shengwei-peng/typeshuttle#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/shengwei-peng/typeshuttle.git"
+  },
+  "bugs": {
+    "url": "https://github.com/shengwei-peng/typeshuttle/issues"
+  },
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "build:test": "node scripts/build.mjs --test",
+    "test": "node --test --experimental-test-coverage --test-coverage-include=\"src/core/**\" --test-coverage-include=\"scripts/lib/**\" --test-coverage-lines=80 --test-coverage-functions=80 --test-coverage-branches=80 \"test/unit/*.test.js\"",
+    "test:e2e": "node scripts/build.mjs --test && playwright test",
+    "docs:check": "node scripts/translations.mjs check",
+    "docs:stamp": "node scripts/translations.mjs stamp",
+    "icons": "node scripts/icons.mjs",
+    "package": "node scripts/build.mjs && node scripts/package.mjs"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.63.0",
+    "esbuild": "0.28.2"
+  }
+}

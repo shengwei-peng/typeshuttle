@@ -1,0 +1,52 @@
+name: Release Please
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+
+jobs:
+  release-please:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: googleapis/release-please-action@v4
+        id: release
+        with:
+          # Uses the built-in GITHUB_TOKEN.
+          # Note: the release PR and release tag created by this action will not
+          # automatically trigger other workflows. If you need CI to run on the
+          # release commit, create a Personal Access Token (PAT) with repo scope,
+          # store it as a repository secret named RELEASE_PLEASE_TOKEN, and change
+          # the line below to:
+          #   token: ${{ secrets.RELEASE_PLEASE_TOKEN }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          release-type: node
+
+      - name: Checkout code
+        if: ${{ steps.release.outputs.releases_created == 'true' }}
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        if: ${{ steps.release.outputs.releases_created == 'true' }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Build & Package extension
+        if: ${{ steps.release.outputs.releases_created == 'true' }}
+        run: |
+          npm ci
+          npm run package
+
+      - name: Upload Release Asset
+        if: ${{ steps.release.outputs.releases_created == 'true' && steps.release.outputs.tag_name != '' }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release upload ${{ steps.release.outputs.tag_name }} release/*.zip --clobber
+

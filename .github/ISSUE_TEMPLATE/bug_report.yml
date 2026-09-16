@@ -1,0 +1,84 @@
+name: Bug report
+description: Something in TypeShuttle does not work as described.
+title: "bug: "
+labels: ["bug", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting. If the problem is specific to one remote desktop client and you want to report how that client behaves overall, use the **Client compatibility report** form instead.
+
+        Do not include hostnames, URLs, account names or screenshots from a work environment. For security problems, follow [SECURITY.md](https://github.com/shengwei-peng/typeshuttle/blob/main/.github/SECURITY.md) instead of opening an issue.
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: Describe the problem and what you expected instead.
+      placeholder: After pressing Ctrl+Shift+V, the second line was typed without a newline.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: Include the exact text you sent if you can share it (or a sample that reproduces the problem).
+      placeholder: |
+        1. Enable TypeShuttle on the remote desktop site.
+        2. Copy two lines of text.
+        3. Press Ctrl+Shift+V in a terminal on the remote session.
+    validations:
+      required: true
+  - type: dropdown
+    id: trigger
+    attributes:
+      label: How did you send the text?
+      options:
+        - Hotkey (Ctrl+Shift+V / Cmd+Shift+V)
+        - Toolbar panel, direct typing
+        - Toolbar panel, precise transfer
+        - Options page or site setup
+        - Other
+    validations:
+      required: true
+  - type: input
+    id: client
+    attributes:
+      label: Remote desktop client and version
+      placeholder: Citrix Workspace app for HTML5 2409
+    validations:
+      required: true
+  - type: input
+    id: typeshuttle-version
+    attributes:
+      label: TypeShuttle version
+      description: Shown in chrome://extensions or edge://extensions.
+      placeholder: 0.1.0
+    validations:
+      required: true
+  - type: input
+    id: browser
+    attributes:
+      label: Browser and version
+      placeholder: Chrome 153
+    validations:
+      required: true
+  - type: input
+    id: os
+    attributes:
+      label: Operating system
+      description: The local computer running the browser, plus the remote OS if relevant.
+      placeholder: Ubuntu 24.04 (local), Ubuntu 24.04 (remote)
+    validations:
+      required: true
+  - type: textarea
+    id: notes
+    attributes:
+      label: Additional context
+      description: Keyboard layout, input method, editor on the remote side, errors shown by TypeShuttle, and anything else that may help.
+  - type: checkboxes
+    id: confidentiality
+    attributes:
+      label: Confidentiality
+      options:
+        - label: This report contains no confidential hostnames, URLs, account names or screenshots.
+          required: true

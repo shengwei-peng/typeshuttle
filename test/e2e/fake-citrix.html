@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <title>Fake Citrix HTML5 session</title>
+  <style>
+    body { margin: 0; font: 14px/1.5 system-ui, sans-serif; }
+    #CitrixRenderCanvas { display: block; width: 100vw; height: 60vh; background: #20252d; }
+    #CitrixClientImeBuffer { position: absolute; left: 20px; top: 20px; width: 0; height: 14px; overflow: hidden; }
+    #remote { margin: 0; padding: 12px; white-space: pre-wrap; }
+  </style>
+</head>
+<body>
+  <!-- Emulates the Citrix Workspace app for HTML5 behaviors documented in docs/clients.md (F1, F5-F9) for e2e tests. -->
+  <canvas id="CitrixRenderCanvas"></canvas>
+  <span id="CitrixClientImeBuffer" class="citrix-client-ime-buffer" contenteditable="true"></span>
+  <pre id="remote"></pre>
+  <script>
+    (() => {
+      const buffer = document.getElementById('CitrixClientImeBuffer');
+      const output = document.getElementById('remote');
+      const remote = { text: '', keys: [], keyups: [], leaks: [] };
+      let swallowNextInput = false;
+      window.__remote = remote;
+
+      const render = () => { output.textContent = remote.text; };
+
+      buffer.addEventListener('keydown', (event) => {
+        // F5: after any key event the next text input is swallowed.
+        swallowNextInput = true;
+        remote.keys.push({ key: event.key, shift: event.shiftKey, ctrl: event.ctrlKey, trusted: event.isTrusted });
+        if (event.code === 'KeyV' && event.shiftKey && (event.ctrlKey || event.metaKey)) remote.leaks.push('hotkey');
+        if (event.key === 'Enter' && event.keyCode === 13) remote.text += '\n';
+        else if (event.key === 'Tab' && event.keyCode === 9) remote.text += '\t';
+        else if (event.key.length === 1 && event.isTrusted && !event.ctrlKey && !event.metaKey) remote.text += event.key;
+        if (event.key === 'Tab') event.preventDefault();
+        render();
+      });
+
+      buffer.addEventListener('keyup', (event) => {
+        remote.keyups.push({ key: event.key, trusted: event.isTrusted });
+      });
+
+      buffer.addEventListener('input', (event) => {
+        const data = event.data ?? '';
+        buffer.textContent = '';
+        if (swallowNextInput) {
+          swallowNextInput = false;
+          return;
+        }
+        // F6: newlines inside text are removed. F8: tab characters become spaces.
+        remote.text += data.replace(/\n/g, '').replace(/\t/g, ' ');
+        render();
+      });
+
+      buffer.addEventListener('paste', () => remote.leaks.push('paste'));
+      document.getElementById('CitrixRenderCanvas').addEventListener('mousedown', (event) => {
+        event.preventDefault();
+        buffer.focus();
+      });
+      buffer.focus();
+    })();
+  </script>
+</body>
+</html>
