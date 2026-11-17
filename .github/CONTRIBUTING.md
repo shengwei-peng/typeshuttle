@@ -33,6 +33,7 @@ To load your build, run `npm run build`, open `chrome://extensions` (or `edge://
 | `npm run package` | Builds and zips the extension into `release/typeshuttle-<version>.zip`, printing its sha256. |
 | `npm run docs:check` | Fails if a translation is out of sync with its English source. |
 | `npm run docs:stamp -- <file>` | Marks a translation as reviewed against the current English source. |
+| `npm run media` | Records `assets/demo-en.gif` and `assets/demo-zh-TW.gif` in a simulated session (`scripts/demo/remote.html`) with the test build, and renders `assets/social-preview.png`. Needs the Playwright Chromium and ImageMagick (`magick`). |
 | `npm run icons` | Renders `assets/icons/*.png` from `assets/logo.svg` (48 and 128 px) and `assets/logo-small.svg` (16 and 32 px, drawn on a 16 px grid). Needs the Playwright Chromium. |
 
 ## Project layout
@@ -62,7 +63,7 @@ Commits follow [Conventional Commits](https://www.conventionalcommits.org/):
 
 Types: `feat`, `fix`, `refactor`, `docs`, `test`, `chore`, `perf`, `ci`. Mark breaking changes with `!` (for example `feat!: ...`) or a `BREAKING CHANGE:` footer.
 
-Releases and [CHANGELOG.md](../CHANGELOG.md) are generated from these messages by release-please, so write the description for users, not for yourself.
+Releases and [CHANGELOG.md](../CHANGELOG.md) are generated from these messages by release-please, so write the description for users, not for yourself. After the zip is uploaded, the release workflow runs `scripts/release-notes.mjs`, which adds the product heading, installation steps, the zip's SHA-256 checksum and the full changelog link to the release notes.
 
 ## Pull requests
 

@@ -1,4 +1,4 @@
-<!-- translation-of: README.md sha256:fc4dd0a7bfb9398f -->
+<!-- translation-of: README.md sha256:ca83efbf9f468cc5 -->
 <p align="center">
   <img src="assets/logo.svg" width="96" height="96" alt="">
 </p>
@@ -6,7 +6,7 @@
 <h1 align="center">TypeShuttle 打字接駁</h1>
 
 <p align="center">
-  <strong>瀏覽器版遠端桌面關閉了剪貼簿同步，照樣能把文字貼進去。</strong><br>
+  <strong>瀏覽器版 Citrix Workspace 關閉了剪貼簿同步，照樣能把文字貼進去。</strong><br>
   Chrome、Edge 擴充功能：幫你把文字打進遠端，或把小檔案一個位元組都不差地傳過去。
 </p>
 
@@ -18,6 +18,11 @@
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-Apache--2.0-blue.svg" alt="授權：Apache-2.0"></a>
   <a href="https://github.com/shengwei-peng/typeshuttle/releases"><img src="https://img.shields.io/github/v/release/shengwei-peng/typeshuttle?label=release" alt="最新版本"></a>
   <a href="https://github.com/shengwei-peng/typeshuttle/actions"><img src="https://img.shields.io/github/actions/workflow/status/shengwei-peng/typeshuttle/ci.yml?label=CI" alt="CI 狀態"></a>
+</p>
+
+<p align="center">
+  <img src="assets/demo-zh-TW.gif" width="800" alt="TypeShuttle 把一段 shell 腳本打進遠端桌面的終端機，再用精確傳輸送出設定檔，遠端算出的 sha256 與本機相同">
+  <br><sub>於模擬的工作階段錄製，可用 <code>npm run media</code> 重新產生。</sub>
 </p>
 
 ---
@@ -38,6 +43,15 @@ TypeShuttle 改走遠端用戶端本身的文字輸入管道，換行再用真�
 | 不需要在瀏覽器以外安裝任何東西 | ✅ | ❌ | ✅ |
 
 <sup>1</sup> 遠端是 Windows 時，部分遠端程式會把全形標點後的中文順序打亂，或吃掉中文後面的 Enter；精確傳輸不受影響。詳見[已知問題](docs/clients.md#known-issues-and-limitations)（英文）。
+
+## 支援的用戶端
+
+| 用戶端 | 狀態 |
+|---|---|
+| Citrix Workspace app for HTML5（在瀏覽器中使用 Citrix Workspace） | 應可使用：已在真實工作階段實測，Windows 上有[已知問題](docs/clients.md#known-issues-and-limitations)（英文） |
+| 其他瀏覽器版用戶端（noVNC、Guacamole、RDP 網頁版等） | 尚未支援 |
+
+狀態定義與各用戶端的細節見 [docs/clients.md](docs/clients.md)（英文）。
 
 ## 功能
 
@@ -93,16 +107,40 @@ TypeShuttle 不發出任何網路請求，也不保留歷史紀錄。你送出�
 
 ## 常見問題
 
-**會在背景讀取我的剪貼簿嗎？**
+### Citrix Workspace 剪貼簿被停用，要怎麼貼上文字？
+
+安裝 TypeShuttle、在 Citrix Workspace 網站啟用，點一下要輸入的位置，再按 <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>V</kbd>。TypeShuttle 透過用戶端本身的文字輸入管道把剪貼簿文字打進去，所以剪貼簿同步被政策關掉時也能用。見[快速上手](#快速上手)。
+
+### 為什麼貼上或模擬打字的字會變成注音符號或其他字元？
+
+送按鍵代碼的工具會讓遠端的輸入法和鍵盤配置重新解讀每個按鍵；遠端開著注音時，`Hi 12` 可能變成注音符號。TypeShuttle 送的是文字而不是按鍵代碼，不受遠端輸入法模式影響。
+
+### 沒有剪貼簿，要怎麼把檔案傳進遠端？
+
+用精確傳輸：在預覽中按 <kbd>P</kbd>，或在工具列面板選擇檔案。TypeShuttle 會打一段簡短的 bash 指令，在遠端 `~/typeshuttle-inbox` 還原出一模一樣的檔案，並印出 sha256 供你核對。遠端需要 bash 終端機，檔案預設上限 1 MB。
+
+### 支援 Proxmox、noVNC、Guacamole 或其他網頁主控台嗎？
+
+目前還不支援。現在只有 Citrix Workspace app for HTML5 有對應的轉接層，其他用戶端需要各自的轉接層；做法見 [Adding a client](docs/clients.md#adding-a-client)（英文），也歡迎回報相容性。
+
+### 可以在 Microsoft Edge 使用嗎？
+
+可以。TypeShuttle 是 Chrome 與 Edge 用的 Manifest V3 擴充功能，需要 120 以上版本，依[安裝](#安裝)步驟從 release 載入即可。
+
+### 會在背景讀取我的剪貼簿嗎？
+
 不會。只有在已啟用的網站按下快捷鍵時，瀏覽器才會把剪貼簿文字交給 TypeShuttle。
 
-**可以把遠端的內容複製回本機嗎？**
+### 可以把遠端的內容複製回本機嗎？
+
 不行。TypeShuttle 只能從本機送到遠端。
 
-**為什麼不用 xdotool 或 AutoHotkey？**
+### 為什麼不用 xdotool 或 AutoHotkey？
+
 它們送的是按鍵代碼，會被遠端的輸入法和鍵盤配置改掉，也無法處理用戶端特有的問題，例如按鍵之後下一段文字被吞掉。
 
-**我的工作環境可以用嗎？**
+### 我的工作環境可以用嗎？
+
 TypeShuttle 打的是你本來就能手動輸入的內容，不會更改任何遠端桌面設定。送進遠端的內容請遵守所屬單位的規範。瀏覽器如果受單位管理，安裝擴充功能可能需要管理員核准。
 
 ## 文件
@@ -114,7 +152,9 @@ TypeShuttle 打的是你本來就能手動輸入的內容，不會更改任何�
 
 ## 參與貢獻
 
-歡迎回報錯誤、回報用戶端相容性，或送出 pull request。開始前請先閱讀 [CONTRIBUTING.md](.github/CONTRIBUTING.md)（英文）。資安問題請依 [SECURITY.md](.github/SECURITY.md) 私下回報。
+歡迎回報錯誤、回報用戶端相容性，或送出 pull request。開始前請先閱讀 [CONTRIBUTING.md](.github/CONTRIBUTING.md)（英文）。資安問題請依 [SECURITY.md](.github/SECURITY.md) 私下回報。使用問題和想法請到 [Discussions](https://github.com/shengwei-peng/typeshuttle/discussions)。
+
+如果 TypeShuttle 幫你省了時間，在 GitHub 按個 ⭐，能讓更多遇到同樣問題的人找到它。
 
 ## 授權
 

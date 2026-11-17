@@ -1,6 +1,6 @@
-# TypeShuttle user guide
+# TypeShuttle user guide: paste text and files into Citrix Workspace in the browser
 
-TypeShuttle types text from your computer into a browser-based remote desktop, or rebuilds a small file there byte for byte. It only sends one way: from your computer to the remote session.
+TypeShuttle types text from your computer into a browser-based remote desktop such as Citrix Workspace app for HTML5, or rebuilds a small file there byte for byte. It only sends one way: from your computer to the remote session.
 
 The interface is available in English and Traditional Chinese. It follows your browser's language; to change it, open **Settings** and choose **Interface language**. This guide uses the English labels.
 

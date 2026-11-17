@@ -24,7 +24,8 @@
     "docs:check": "node scripts/translations.mjs check",
     "docs:stamp": "node scripts/translations.mjs stamp",
     "icons": "node scripts/icons.mjs",
-    "package": "node scripts/build.mjs && node scripts/package.mjs"
+    "package": "node scripts/build.mjs && node scripts/package.mjs",
+    "media": "node scripts/build.mjs --test && node scripts/media.mjs"
   },
   "devDependencies": {
     "@playwright/test": "1.63.0",

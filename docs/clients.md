@@ -1,4 +1,4 @@
-# Remote desktop clients
+# Remote desktop clients: support status and known issues
 
 This page records how each browser-based remote desktop client handles input, what TypeShuttle does about it, and known limitations.
 

@@ -1,7 +1,7 @@
-<!-- translation-of: docs/user-guide.md sha256:6417bac90ab3c889 -->
-# TypeShuttle 使用指南
+<!-- translation-of: docs/user-guide.md sha256:135e2c175e728311 -->
+# TypeShuttle 使用指南：把文字與檔案貼進瀏覽器版 Citrix Workspace
 
-TypeShuttle 會把本機的文字「打字」送進瀏覽器版遠端桌面，或在遠端還原出一模一樣的小檔案。它只能單向傳送：從本機到遠端。
+TypeShuttle 會把本機的文字「打字」送進瀏覽器版遠端桌面（例如 Citrix Workspace app for HTML5），或在遠端還原出一模一樣的小檔案。它只能單向傳送：從本機到遠端。
 
 介面提供英文與繁體中文，預設跟隨瀏覽器語言；要切換，請到「**設定**」的「**介面語言**」。
 
