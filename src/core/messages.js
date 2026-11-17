@@ -1,5 +1,3 @@
-// Validates messages from the toolbar panel to the page. Anything malformed is ignored.
-
 const MAX_TEXT_LENGTH = 5_000_000;
 const MAX_BASE64_LENGTH = 30_000_000;
 const MAX_FILE_NAME_LENGTH = 255;
@@ -12,7 +10,8 @@ const SCHEMAS = {
     isString(message.text, MAX_TEXT_LENGTH)
     && typeof message.sendTabKey === 'boolean'
     && ['enter', 'shift-enter'].includes(message.newlineKey)
-      ? { text: message.text, sendTabKey: message.sendTabKey, newlineKey: message.newlineKey }
+    && (message.leadingImeCommit === undefined || typeof message.leadingImeCommit === 'boolean')
+      ? { text: message.text, sendTabKey: message.sendTabKey, newlineKey: message.newlineKey, leadingImeCommit: message.leadingImeCommit === true }
       : null
   ),
   'typeshuttle/send-precise': (message) => (

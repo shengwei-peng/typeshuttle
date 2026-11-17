@@ -1,10 +1,9 @@
-// Precise transfer (docs/ARCHITECTURE.md#precise-transfer): gzip -> base64 -> a bash heredoc that decodes, saves and prints the sha256.
-// The directory and file name end up in a shell command, so both are validated against an allowlist.
+import { localizedError } from './i18n.js';
 
 export const HEREDOC_DELIMITER = 'TYPESHUTTLE_EOF';
 const BASE64_LINE_WIDTH = 76;
 
-const SAFE_DIR_PATTERN = /^(~\/|\/)?[A-Za-z0-9._-]+(\/[A-Za-z0-9._-]+)*$/;
+const SAFE_DIR_PATTERN = /^(~\/|\/)?[A-Za-z0-9._][A-Za-z0-9._-]*(\/[A-Za-z0-9._][A-Za-z0-9._-]*)*$/;
 const SAFE_FILENAME_PATTERN = /^[A-Za-z0-9._-]+$/;
 const MAX_FILENAME_LENGTH = 80;
 const BASE64_BATCH_BYTES = 0x8000;
@@ -24,7 +23,7 @@ export function fromBase64(text) {
   try {
     return Uint8Array.from(atob(text), (char) => char.charCodeAt(0));
   } catch {
-    throw new Error('Invalid base64 payload');
+    throw localizedError('errorInvalidBase64', {}, 'Invalid base64 payload');
   }
 }
 
@@ -69,8 +68,8 @@ export function buildFilename(date, originalName) {
 }
 
 export function buildPreciseCommand({ dir, filename, base64Lines }) {
-  if (!isSafeDir(dir)) throw new Error(`Unsafe directory for precise transfer: ${dir}`);
-  if (!SAFE_FILENAME_PATTERN.test(filename)) throw new Error(`Unsafe filename for precise transfer: ${filename}`);
+  if (!isSafeDir(dir)) throw localizedError('errorUnsafeDir', { dir }, `Unsafe directory for precise transfer: ${dir}`);
+  if (!SAFE_FILENAME_PATTERN.test(filename)) throw localizedError('errorUnsafeFilename', { name: filename }, `Unsafe filename for precise transfer: ${filename}`);
   const target = `${dir}/${filename}`;
   return [
     `mkdir -p ${dir} && base64 -d <<'${HEREDOC_DELIMITER}' | gunzip > ${target}`,

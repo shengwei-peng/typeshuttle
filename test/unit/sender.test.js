@@ -105,3 +105,47 @@ test('runPlan uses an abortable default sleep', async () => {
   assert.equal(result.status, 'aborted');
   assert.ok(Date.now() - started < 1000);
 });
+
+test('runPlan presses the newline key for an IME commit step and waits the line delay', async () => {
+  const adapter = recordingAdapter();
+  const waits = [];
+  const result = await runPlan({
+    plan: buildTypingPlan('中\nb', { chunkSize: 10, sendTabKey: false, imeCommitEnter: true }),
+    adapter, pacing: PACING, newlineKey: 'shift-enter',
+    signal: new AbortController().signal, sleep: async (ms) => { waits.push(ms); },
+  });
+
+  assert.deepEqual(adapter.calls, [['text', '中'], ['newline', true], ['newline', true], ['text', 'b']]);
+  assert.deepEqual(waits, [40, 80, 80, 40]);
+  assert.equal(result.status, 'done');
+  assert.equal(result.lineNumber, 2);
+});
+
+const imePlan = () => buildTypingPlan('中\nb', { chunkSize: 10, sendTabKey: false, imeCommitEnter: true });
+
+test('an abort right before an IME commit reports it as pending, with the plain-text remainder', async () => {
+  const controller = new AbortController();
+  const adapter = recordingAdapter(() => controller.abort());
+  const result = await runPlan({ plan: imePlan(), adapter, pacing: PACING, newlineKey: 'enter', signal: controller.signal, sleep: noSleep });
+
+  assert.equal(result.status, 'aborted');
+  assert.equal(result.remainingText, '\nb');
+  assert.equal(result.lineNumber, 1);
+  assert.equal(result.pendingImeCommit, true);
+});
+
+test('an abort after the IME commit has nothing pending', async () => {
+  const controller = new AbortController();
+  const adapter = recordingAdapter();
+  const pressNewline = adapter.pressNewline;
+  adapter.pressNewline = (options) => { pressNewline(options); controller.abort(); };
+  const result = await runPlan({ plan: imePlan(), adapter, pacing: PACING, newlineKey: 'enter', signal: controller.signal, sleep: noSleep });
+
+  assert.equal(result.remainingText, '\nb');
+  assert.equal(result.pendingImeCommit, false);
+});
+
+test('a finished plan has nothing pending', async () => {
+  const result = await runPlan({ plan: imePlan(), adapter: recordingAdapter(), pacing: PACING, newlineKey: 'enter', signal: new AbortController().signal, sleep: noSleep });
+  assert.equal(result.pendingImeCommit, false);
+});

@@ -1,4 +1,3 @@
-// Builds the extension into dist/extension (with --test: dist/extension-test, which also grants 127.0.0.1 for e2e tests).
 import { build } from 'esbuild';
 import { cp, mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import path from 'node:path';
@@ -15,6 +14,7 @@ const STATIC_FILES = [
   ['src/options/options.html', 'options.html'],
   ['src/options/options.css', 'options.css'],
   ['assets/icons', 'icons'],
+  ['src/_locales', '_locales'],
 ];
 
 const shared = {
@@ -23,6 +23,7 @@ const shared = {
   legalComments: 'none',
   logLevel: 'warning',
   charset: 'utf8',
+  minifySyntax: true,
   define: { __TYPESHUTTLE_TEST__: String(isTest) },
 };
 
@@ -53,4 +54,14 @@ await mkdir(outdir, { recursive: true });
 await bundle();
 await Promise.all(STATIC_FILES.map(([from, to]) => cp(path.join(root, from), path.join(outdir, to), { recursive: true })));
 await writeManifest();
+if (!isTest) {
+  const content = await readFile(path.join(outdir, 'content.js'), 'utf8');
+  if (['typeshuttle-test', '__TYPESHUTTLE_TEST__'].some((marker) => content.includes(marker))) {
+    throw new Error('The production content script must not contain the test hook');
+  }
+  const builtManifest = await readFile(path.join(outdir, 'manifest.json'), 'utf8');
+  if (TEST_HOST_PERMISSIONS.some((pattern) => builtManifest.includes(pattern))) {
+    throw new Error('The production manifest must not contain test host permissions');
+  }
+}
 console.log(`Built ${path.relative(root, outdir)}`);

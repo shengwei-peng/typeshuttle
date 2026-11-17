@@ -1,18 +1,18 @@
-// Panel send form with direct typing and precise transfer modes; shows stats, warnings and transfer details before sending.
 import { normalizeForTyping } from '../core/normalize.js';
-import { buildTypingPlan } from '../core/segment.js';
+import { buildTypingPlan, hasNonAscii } from '../core/segment.js';
 import { evaluateDirect, estimateDurationMs } from '../core/policy.js';
-import { pacingFor } from '../core/settings.js';
+import { pacingFor, precisePacingFor } from '../core/settings.js';
 import { preparePrecise, toBase64 } from '../core/precise.js';
-import { formatBytes, formatCount, formatDuration } from '../core/format.js';
-import { remainingKey } from '../shared/remaining.js';
+import { formatBytes, formatCount, formatEstimate, formatStats } from '../core/format.js';
+import { readRemaining, remainingKey } from '../shared/remaining.js';
+import { errorText } from '../core/i18n.js';
 
 const $ = (id) => document.getElementById(id);
 const PRECISE_DEBOUNCE_MS = 200;
 const COMMAND_OVERHEAD_LINES = 3;
 const REJECT_REASONS = {
-  busy: '正在送出中，請等目前的內容送完。',
-  'not-ready': '找不到遠端桌面的輸入區，請確認 Citrix 仍在連線。',
+  busy: 'rejectBusy',
+  'not-ready': 'rejectNotReady',
 };
 
 function setWarning(tone, text) {
@@ -22,24 +22,29 @@ function setWarning(tone, text) {
   element.textContent = text ?? '';
 }
 
-export async function createSendForm({ tab, settings, onSent }) {
+export async function createSendForm({ tab, settings, t, onSent }) {
   const createdAt = Date.now();
   const pacing = pacingFor(settings.speed);
+  const precisePacing = precisePacingFor(settings.speed);
   let mode = 'direct';
   let file = null;
   let refreshToken = 0;
+  let remaining = null;
 
   function refreshDirect() {
     const sendTabKey = $('send-tab').checked;
     const text = normalizeForTyping($('text').value, { tabWidth: settings.tabWidth, sendTabKey, keepTrailingNewline: settings.keepTrailingNewline });
     const verdict = evaluateDirect(text, settings);
-    const plan = buildTypingPlan(text, { chunkSize: pacing.chunkSize, sendTabKey });
+    const plan = buildTypingPlan(text, { chunkSize: pacing.chunkSize, sendTabKey, imeCommitEnter: settings.imeCommitEnter });
     $('stats').textContent = verdict.empty
-      ? '尚未輸入內容'
-      : `${formatCount(verdict.stats.lines)} 行 · ${formatCount(verdict.stats.chars)} 字 · 約 ${formatDuration(estimateDurationMs(plan, pacing))}`;
-    if (verdict.exceedsLimit) setWarning('error', `超過直接打字上限 ${formatCount(settings.maxDirectChars)} 字，請改用精確傳輸。`);
-    else if (verdict.suggestPrecise) setWarning('warn', '文字較長，建議改用精確傳輸（接收端需為遠端 bash 終端機）。');
-    else setWarning('warn', null);
+      ? t('statsEmptyDirect')
+      : formatStats({ ...verdict.stats, durationMs: estimateDurationMs(plan, pacing) }, t);
+    const notices = [
+      verdict.exceedsLimit && { tone: 'error', text: t('panelOverLimit', { limit: formatCount(settings.maxDirectChars) }) },
+      !verdict.exceedsLimit && verdict.suggestPrecise && { tone: 'warn', text: t('panelSuggestPrecise') },
+      hasNonAscii(text) && { tone: 'info', text: t('nonAsciiNotice') },
+    ].filter(Boolean);
+    setWarning(notices[0]?.tone ?? 'warn', notices.length > 0 ? notices.map((notice) => notice.text).join(' ') : null);
     $('send').disabled = verdict.empty || verdict.exceedsLimit;
   }
 
@@ -51,13 +56,15 @@ export async function createSendForm({ tab, settings, onSent }) {
     $('send').disabled = true;
     $('precise-details').hidden = true;
     if (bytes.length === 0) {
-      $('stats').textContent = '尚未輸入內容或選擇檔案';
+      $('stats').textContent = t('statsEmptyPrecise');
       setWarning('warn', null);
       return;
     }
-    $('stats').textContent = file ? `檔案：${file.name}（${formatBytes(bytes.length)}）` : `文字：${formatBytes(bytes.length)}`;
+    $('stats').textContent = file
+      ? t('statsFile', { name: file.name, size: formatBytes(bytes.length) })
+      : t('statsText', { size: formatBytes(bytes.length) });
     if (bytes.length > settings.maxPreciseBytes) {
-      setWarning('error', `超過精確傳輸上限 ${formatBytes(settings.maxPreciseBytes)}。`);
+      setWarning('error', t('panelPreciseTooLarge', { limit: formatBytes(settings.maxPreciseBytes) }));
       return;
     }
     setWarning('warn', null);
@@ -65,10 +72,10 @@ export async function createSendForm({ tab, settings, onSent }) {
     if (token !== refreshToken) return;
     const prepared = await preparePrecise({ bytes, date: new Date(createdAt), dir: settings.preciseDir, originalName: file?.name });
     if (token !== refreshToken) return;
-    const plan = buildTypingPlan(prepared.commandText, { chunkSize: pacing.chunkSize, sendTabKey: false });
+    const plan = buildTypingPlan(prepared.commandText, { chunkSize: precisePacing.chunkSize, sendTabKey: false });
     $('detail-path').textContent = prepared.targetPath;
-    $('detail-size').textContent = `${formatBytes(prepared.byteLength)}（壓縮後 ${formatBytes(prepared.compressedLength)}）`;
-    $('detail-lines').textContent = `${formatCount(prepared.payloadLines + COMMAND_OVERHEAD_LINES)} 行 · 約 ${formatDuration(estimateDurationMs(plan, pacing))}`;
+    $('detail-size').textContent = t('detailSizeValue', { size: formatBytes(prepared.byteLength), compressed: formatBytes(prepared.compressedLength) });
+    $('detail-lines').textContent = `${t('lineCount', { count: formatCount(prepared.payloadLines + COMMAND_OVERHEAD_LINES) })} · ${formatEstimate(estimateDurationMs(plan, precisePacing), t)}`;
     $('detail-sha').textContent = prepared.sha256;
     $('precise-details').hidden = false;
     $('send').disabled = false;
@@ -79,7 +86,7 @@ export async function createSendForm({ tab, settings, onSent }) {
       refreshDirect();
       return;
     }
-    refreshPrecise().catch((error) => setWarning('error', `無法準備精確傳輸：${error.message}`));
+    refreshPrecise().catch((error) => setWarning('error', t('panelPreciseFailed', { error: errorText(error, t) })));
   }
 
   function setMode(next) {
@@ -89,7 +96,7 @@ export async function createSendForm({ tab, settings, onSent }) {
     $('direct-options').hidden = next !== 'direct';
     $('precise-note').hidden = next !== 'precise';
     $('file-row').hidden = next !== 'precise';
-    $('send').textContent = next === 'direct' ? '送出到遠端' : '送出到遠端終端機';
+    $('send').textContent = t(next === 'direct' ? 'sendDirect' : 'sendPrecise');
     refresh();
   }
 
@@ -98,18 +105,24 @@ export async function createSendForm({ tab, settings, onSent }) {
     if (!selected) return;
     if (selected.size > settings.maxPreciseBytes) {
       $('file').value = '';
-      setWarning('error', `「${selected.name}」有 ${formatBytes(selected.size)}，超過上限 ${formatBytes(settings.maxPreciseBytes)}。`);
+      setWarning('error', t('fileTooLarge', { name: selected.name, size: formatBytes(selected.size), limit: formatBytes(settings.maxPreciseBytes) }));
       return;
     }
     file = { name: selected.name, bytes: new Uint8Array(await selected.arrayBuffer()) };
+    renderFileName();
     $('clear-file').hidden = false;
     $('text').disabled = true;
     refresh();
   }
 
+  function renderFileName() {
+    $('file-name').textContent = file ? file.name : t('fileNone');
+  }
+
   function clearFile() {
     file = null;
     $('file').value = '';
+    renderFileName();
     $('clear-file').hidden = true;
     $('text').disabled = false;
     refresh();
@@ -118,12 +131,18 @@ export async function createSendForm({ tab, settings, onSent }) {
   async function send() {
     $('send').disabled = true;
     const message = mode === 'direct'
-      ? { type: 'typeshuttle/send-direct', text: $('text').value, sendTabKey: $('send-tab').checked, newlineKey: $('newline-key').value }
+      ? {
+        type: 'typeshuttle/send-direct',
+        text: $('text').value,
+        sendTabKey: $('send-tab').checked,
+        newlineKey: $('newline-key').value,
+        leadingImeCommit: Boolean(remaining?.pendingImeCommit) && $('text').value === remaining.text,
+      }
       : { type: 'typeshuttle/send-precise', dataBase64: toBase64(preciseBytes()), createdAt, fileName: file?.name ?? null };
     try {
       const response = await chrome.tabs.sendMessage(tab.id, message);
       if (!response?.accepted) {
-        setWarning('error', REJECT_REASONS[response?.reason] ?? '頁面沒有接受這次送出，請重新整理後再試。');
+        setWarning('error', t(REJECT_REASONS[response?.reason] ?? 'rejectUnknown'));
         $('send').disabled = false;
         return;
       }
@@ -131,21 +150,23 @@ export async function createSendForm({ tab, settings, onSent }) {
       await chrome.tabs.update(tab.id, { active: true });
       onSent();
     } catch (error) {
-      setWarning('error', `送出失敗：${error.message}`);
+      setWarning('error', t('sendFailed', { error: errorText(error, t) }));
       $('send').disabled = false;
     }
   }
 
   async function loadRemaining() {
     const key = remainingKey(tab.id);
-    const { [key]: remaining } = await chrome.storage.session.get(key);
-    if (!remaining) return;
-    $('text').value = remaining;
+    const { [key]: stored } = await chrome.storage.session.get(key);
+    remaining = readRemaining(stored);
+    if (!remaining?.text) return;
+    $('text').value = remaining.text;
     $('remaining-banner').hidden = false;
   }
 
   async function clearRemaining() {
     await chrome.storage.session.remove(remainingKey(tab.id));
+    remaining = null;
     $('remaining-banner').hidden = true;
     $('text').value = '';
     refresh();
@@ -157,9 +178,11 @@ export async function createSendForm({ tab, settings, onSent }) {
   $('send-tab').addEventListener('change', refresh);
   $('mode-direct').addEventListener('click', () => setMode('direct'));
   $('mode-precise').addEventListener('click', () => setMode('precise'));
-  $('file').addEventListener('change', () => selectFile().catch((error) => setWarning('error', `無法讀取檔案：${error.message}`)));
+  $('file').addEventListener('change', () => selectFile().catch((error) => setWarning('error', t('fileReadFailed', { error: errorText(error, t) }))));
   $('clear-file').addEventListener('click', clearFile);
-  $('clear-remaining').addEventListener('click', () => clearRemaining().catch((error) => setWarning('error', error.message)));
+  $('choose-file').addEventListener('click', () => $('file').click());
+  renderFileName();
+  $('clear-remaining').addEventListener('click', () => clearRemaining().catch((error) => setWarning('error', errorText(error, t))));
   $('send').addEventListener('click', send);
   setMode('direct');
   $('text').focus();

@@ -1,6 +1,3 @@
-// Turns text into typing steps. Citrix strips newlines from inserted text (docs/clients.md, F6), so lines are sent one by one with a newline key in between.
-// Long lines are chunked on grapheme boundaries so emoji and combining sequences stay intact.
-
 const graphemeSegmenter = new Intl.Segmenter(undefined, { granularity: 'grapheme' });
 
 export function splitGraphemes(text) {
@@ -26,15 +23,34 @@ function lineSteps(line, { chunkSize, sendTabKey }) {
   ]);
 }
 
+const NON_ASCII = /[^\x00-\x7f]/;
+
+function newlineSteps(previousLine, { imeCommitEnter }) {
+  return imeCommitEnter && NON_ASCII.test(previousLine) ? [{ type: 'imeCommit' }, { type: 'newline' }] : [{ type: 'newline' }];
+}
+
+export function withLeadingImeCommit(plan) {
+  return plan[0]?.type === 'newline' ? [{ type: 'imeCommit' }, ...plan] : plan;
+}
+
+export function hasNonAscii(text) {
+  return NON_ASCII.test(text);
+}
+
 export function buildTypingPlan(text, options) {
   if (text === '') return [];
-  return text.split('\n').flatMap((line, index) => [
-    ...(index > 0 ? [{ type: 'newline' }] : []),
+  const lines = text.split('\n');
+  return lines.flatMap((line, index) => [
+    ...(index > 0 ? newlineSteps(lines[index - 1], options) : []),
     ...lineSteps(line, options),
   ]);
 }
 
-const STEP_TEXT = { newline: () => '\n', tab: () => '\t', text: (step) => step.value };
+export function isLineBreakStep(step) {
+  return step.type === 'newline' || step.type === 'imeCommit';
+}
+
+const STEP_TEXT = { newline: () => '\n', imeCommit: () => '', tab: () => '\t', text: (step) => step.value };
 
 export function planToText(plan) {
   return plan.map((step) => STEP_TEXT[step.type](step)).join('');

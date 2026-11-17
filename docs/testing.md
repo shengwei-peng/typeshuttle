@@ -100,6 +100,17 @@ The check reports four problems: a missing stamp, a stamp naming the wrong sourc
 - **Real client behavior:** the emulator only encodes behaviors we already know. New client versions, typing speed limits, full screen, Keyboard Lock and remote IMEs need live sessions.
 - **Physical input:** keys that Playwright dispatches do not go through the local OS, the local IME or a physical keyboard.
 
+### Test build hook
+
+The test build (`npm run build:test`) also listens for `window.postMessage` calls from the page, so a live session can be driven without opening the panel or the options page:
+
+| Message | Effect | Reply |
+|---|---|---|
+| `{ source: 'typeshuttle-test', id, action: 'settings', values }` | Saves `values` to `chrome.storage.sync` and reloads the settings | `{ ok: true }` |
+| `{ source: 'typeshuttle-test', id, action: 'send', message }` | Handles `message` exactly like a message from the panel, for example `typeshuttle/send-direct` or `typeshuttle/send-precise` | The same response the panel gets |
+
+Replies arrive as `{ source: 'typeshuttle-test-reply', id, result }`. Any page script can use the hook, so load the test build only for testing. `npm run build` fails if the production content script contains it, and `test/e2e/hotkey.spec.js` checks that it works.
+
 ## Manual testing on live clients
 
 Run the common checklist on every supported client, then the client-specific items. Record the results in the pull request or release notes rather than in this file. Update the status in [clients.md](clients.md) to match.
@@ -138,7 +149,7 @@ To capture typed text in a file on the remote side, run `cat > ~/ts-check.txt` i
 | 2 | Copy `echo hello`, focus the remote editor, press <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>V</kbd> | The text appears once, without a dialog. No stray `V`, paste or shortcut reaches the remote side |
 | 3 | Copy `繁體中文 日本語 한국어 👍🏽 é ∑` and send it into the editor. Do it once with the remote IME in native mode and once in English mode | The text is identical both times, and the remote IME mode is unchanged afterwards |
 | 4 | Copy three lines and press the hotkey. Press <kbd>Esc</kbd>, then press the hotkey again and press <kbd>Enter</kbd> | The dialog previews the lines. <kbd>Esc</kbd> sends nothing. <kbd>Enter</kbd> types the three lines with no extra newline from the confirming key |
-| 5 | Send `ts-1k.txt` into `cat > ~/ts-check.txt` at the 標準 (normal) and 快 (fast) speeds | `wc -m` and `sha256sum` match the local file. If characters are lost, repeat at 保守 (safe) and record the fastest speed that is lossless |
+| 5 | Send `ts-1k.txt` into `cat > ~/ts-check.txt` at the 標準 (normal) and 快 (fast) speeds, in a terminal and in an editor | `wc -m` and `sha256sum` match the local file at 標準 (normal). Record whether 快 (fast) loses keys; it is allowed to in a terminal. If 標準 (normal) loses keys, repeat at 保守 (safe) and update [clients.md](clients.md#typing-speed) |
 | 6 | Send `ts-10k.txt` the same way | The dialog suggests precise transfer. After you choose to send, the counts and hash still match |
 | 7 | In the panel, type `all:` and a tab-indented `make build` on the next line, turn on 「這次送出 Tab 鍵」 (Send the Tab key this time), and send into `cat > ~/ts-tab.txt` | `cat -A ~/ts-tab.txt` shows `^I` before `make build` |
 | 8 | Set the panel's newline key to Shift+Enter and send two lines into a remote app where Shift+Enter inserts a line break, such as a chat box | The lines are separated without submitting, and the remote IME mode is unchanged |
@@ -152,6 +163,8 @@ To capture typed text in a file on the remote side, run `cat > ~/ts-check.txt` i
 | 16 | With the client tab still open, reload the extension at `chrome://extensions` without reloading the tab, then press the hotkey. Open the panel, then press the hotkey again | TypeShuttle types nothing on the first press; the shortcut reaches the client as an ordinary key press. After the panel re-injects the script, each press types the text exactly once |
 | 17 | With a local IME active, such as a Chinese or Japanese input method, press the hotkey and use <kbd>Enter</kbd>, <kbd>Esc</kbd> and <kbd>P</kbd> in the dialog | The hotkey and the dialog keys still work |
 | 18 | Remove the site on the options page, then reload the client tab | The hotkey is no longer intercepted, and `chrome://extensions` shows no access to the host |
+| 19 | Send `  two leading spaces` and a line indented with 8 spaces | The spaces arrive as U+0020, not U+00A0, and none are lost (F11) |
+| 20 | On a Windows session, send `你好，世界。` into an editor and into a terminal, then send two lines that both contain Chinese into `cat` in a terminal | Record whether the characters arrive in order (F12), whether the lines stay separate (F13), and whether the remote input method is a Chinese IME or an English keyboard. If lines are joined, repeat with **Extra Enter after lines with non-ASCII characters** (「含中文等非英數字的行，行尾多按一次 Enter」) on and record how many lines are still joined and how many blank lines appear |
 
 ### Citrix Workspace app for HTML5
 

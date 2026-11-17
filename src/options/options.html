@@ -1,9 +1,9 @@
 <!doctype html>
-<html lang="zh-Hant">
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>TypeShuttle 設定</title>
+  <title data-i18n="optionsTitle">TypeShuttle settings</title>
   <link rel="stylesheet" href="tokens.css">
   <link rel="stylesheet" href="options.css">
 </head>
@@ -11,82 +11,98 @@
   <main class="page">
     <header class="head">
       <p class="brand">TypeShuttle</p>
-      <h1>設定</h1>
+      <h1 data-i18n="optionsHeading">Settings</h1>
       <p id="save-status" class="save-status muted" role="status"></p>
     </header>
 
     <form id="settings-form" novalidate>
+      <section aria-labelledby="h-language">
+        <h2 id="h-language" data-i18n="languageHeading">Language</h2>
+        <div class="field">
+          <label for="uiLanguage" data-i18n="languageLabel">Interface language</label>
+          <select id="uiLanguage" name="uiLanguage">
+            <option value="auto" data-i18n="languageAuto">Same as the browser</option>
+            <option value="en">English</option>
+            <option value="zh_TW">繁體中文</option>
+          </select>
+        </div>
+      </section>
+
       <section aria-labelledby="h-speed">
-        <h2 id="h-speed">送出速度</h2>
-        <p class="muted">遠端出現漏字時，改用較慢的檔位。</p>
+        <h2 id="h-speed" data-i18n="speedHeading">Typing speed</h2>
+        <p class="muted" data-i18n="speedIntro">If characters go missing on the remote side, choose a slower speed.</p>
         <div class="choices">
-          <label><input type="radio" name="speed" value="fast"> <strong>快</strong><span class="muted">網路穩定、內容不長時</span></label>
-          <label><input type="radio" name="speed" value="normal"> <strong>標準</strong><span class="muted">建議</span></label>
-          <label><input type="radio" name="speed" value="safe"> <strong>保守</strong><span class="muted">遠端反應慢或會漏字時</span></label>
+          <label><input type="radio" name="speed" value="fast"> <strong data-i18n="speedFast">Fast</strong><span class="muted" data-i18n="speedFastHint"></span></label>
+          <label><input type="radio" name="speed" value="normal"> <strong data-i18n="speedNormal">Normal</strong><span class="muted" data-i18n="speedNormalHint"></span></label>
+          <label><input type="radio" name="speed" value="safe"> <strong data-i18n="speedSafe">Safe</strong><span class="muted" data-i18n="speedSafeHint"></span></label>
         </div>
       </section>
 
       <section aria-labelledby="h-text">
-        <h2 id="h-text">文字處理（直接打字）</h2>
+        <h2 id="h-text" data-i18n="textHeading">Text handling (direct typing)</h2>
         <div class="field">
-          <label for="tabWidth">Tab 轉成幾個空格</label>
+          <label for="tabWidth" data-i18n="tabWidthLabel">Spaces per Tab</label>
           <input id="tabWidth" name="tabWidth" type="number" min="1" max="8" step="1">
         </div>
         <div class="field">
-          <label for="newlineKey">預設換行鍵</label>
+          <label for="newlineKey" data-i18n="newlineDefaultLabel">Default newline key</label>
           <select id="newlineKey" name="newlineKey">
             <option value="enter">Enter</option>
-            <option value="shift-enter">Shift+Enter（遠端聊天程式）</option>
+            <option value="shift-enter" data-i18n="newlineShiftEnterRemoteChat">Shift+Enter (remote chat apps)</option>
           </select>
         </div>
         <label class="check">
           <input id="keepTrailingNewline" name="keepTrailingNewline" type="checkbox">
-          <span>保留結尾換行 <span class="muted">（關閉時，最後一行送完不會按 Enter，避免終端機直接執行）</span></span>
+          <span><span data-i18n="keepTrailingLabel">Keep trailing newline</span> <span class="muted" data-i18n="keepTrailingHint"></span></span>
+        </label>
+        <label class="check">
+          <input id="imeCommitEnter" name="imeCommitEnter" type="checkbox">
+          <span><span data-i18n="imeCommitLabel">Extra Enter after lines with non-ASCII characters</span> <span class="muted" data-i18n="imeCommitHint"></span></span>
         </label>
       </section>
 
       <section aria-labelledby="h-limits">
-        <h2 id="h-limits">確認與上限</h2>
+        <h2 id="h-limits" data-i18n="limitsHeading">Confirmation and limits</h2>
         <div class="field">
-          <label for="confirmCharThreshold">超過幾個字要先確認</label>
+          <label for="confirmCharThreshold" data-i18n="confirmThresholdLabel">Ask before sending more than this many characters</label>
           <input id="confirmCharThreshold" name="confirmCharThreshold" type="number" min="0" step="1">
-          <p class="help muted">多行內容一律先確認。</p>
+          <p class="help muted" data-i18n="confirmThresholdHelp">Multi-line text always asks first.</p>
         </div>
         <div class="field">
-          <label for="suggestPreciseChars">超過幾個字建議改用精確傳輸</label>
+          <label for="suggestPreciseChars" data-i18n="suggestPreciseLabel">Suggest precise transfer above this many characters</label>
           <input id="suggestPreciseChars" name="suggestPreciseChars" type="number" min="0" step="1">
         </div>
         <div class="field">
-          <label for="maxDirectChars">直接打字上限（字）</label>
+          <label for="maxDirectChars" data-i18n="maxDirectLabel">Direct typing limit (characters)</label>
           <input id="maxDirectChars" name="maxDirectChars" type="number" min="1" step="1">
         </div>
         <div class="field">
-          <label for="maxPreciseKb">精確傳輸上限（KB）</label>
+          <label for="maxPreciseKb" data-i18n="maxPreciseLabel">Precise transfer limit (KB)</label>
           <input id="maxPreciseKb" name="maxPreciseKb" type="number" min="1" max="20480" step="1">
         </div>
       </section>
 
       <section aria-labelledby="h-precise">
-        <h2 id="h-precise">精確傳輸</h2>
+        <h2 id="h-precise" data-i18n="preciseHeading">Precise transfer</h2>
         <div class="field">
-          <label for="preciseDir">遠端存檔目錄</label>
+          <label for="preciseDir" data-i18n="preciseDirLabel">Remote folder</label>
           <input id="preciseDir" name="preciseDir" type="text" spellcheck="false" autocomplete="off">
-          <p class="help muted">只能使用英數字與 <code>. _ - /</code>，可用 <code>~/</code> 開頭，例如 <code>~/typeshuttle-inbox</code>。</p>
+          <p class="help muted" data-i18n="preciseDirHelp">Letters, digits and . _ - / only.</p>
         </div>
       </section>
     </form>
 
     <section aria-labelledby="h-sites">
-      <h2 id="h-sites">已啟用的網站</h2>
-      <p class="muted">TypeShuttle 只在這些網站上運作。移除後會一併收回權限。</p>
+      <h2 id="h-sites" data-i18n="sitesHeading">Enabled sites</h2>
+      <p class="muted" data-i18n="sitesIntro">TypeShuttle works only on these sites.</p>
       <ul id="site-list" class="site-list"></ul>
-      <p id="site-empty" class="muted" hidden>還沒有啟用任何網站。在遠端桌面分頁點工具列的 TypeShuttle 圖示即可啟用。</p>
+      <p id="site-empty" class="muted" hidden data-i18n="sitesEmpty">No sites enabled yet.</p>
     </section>
 
     <section aria-labelledby="h-hotkey">
-      <h2 id="h-hotkey">快捷鍵</h2>
-      <p>在遠端桌面分頁按 <kbd>Ctrl</kbd> <kbd>Shift</kbd> <kbd>V</kbd>（Mac：<kbd>Cmd</kbd> <kbd>Shift</kbd> <kbd>V</kbd>），會把剪貼簿的文字打進遠端。</p>
-      <p class="muted">送出中按任意鍵或點一下畫面即可中止。</p>
+      <h2 id="h-hotkey" data-i18n="hotkeyHeading">Hotkey</h2>
+      <p><span data-i18n="hotkeyBodyBefore">On a remote desktop tab, press</span> <kbd>Ctrl</kbd> <kbd>Shift</kbd> <kbd>V</kbd> <span data-i18n="hotkeyBodyMac">(Mac:</span> <kbd>Cmd</kbd> <kbd>Shift</kbd> <kbd>V</kbd><span data-i18n="hotkeyBodyAfter">) to type the clipboard text into the remote session.</span></p>
+      <p class="muted" data-i18n="hotkeyAbort">While sending, press any key or click the screen to stop.</p>
     </section>
   </main>
   <script type="module" src="options.js"></script>

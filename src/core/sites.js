@@ -1,12 +1,9 @@
-// Pure logic for site enablement (docs/ARCHITECTURE.md#permissions): grant one host at a time, never a wildcard.
-
 export const SCRIPT_ID_PREFIX = 'typeshuttle-site-';
 
 const SITE_PATTERN = /^https?:\/\/[^/*]+\/\*$/;
 const FNV_OFFSET = 0x811c9dc5;
 const FNV_PRIME = 0x01000193;
 
-// Browser match patterns ignore ports, so only the hostname is used.
 export function originPatternFromUrl(url) {
   try {
     const { protocol, hostname } = new URL(url);

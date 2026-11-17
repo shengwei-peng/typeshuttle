@@ -38,12 +38,20 @@ flowchart LR
 | `src/background.js` | Service worker | Keeps content script registrations in line with granted hosts and stores leftover text after an abort |
 | `src/popup/` | Toolbar panel | Shows the tab state, enables the current site, and hosts the send form (`send-form.js`) |
 | `src/options/` | Options page | Settings form and the list of enabled sites |
-| `src/shared/` | Service worker, panel, options | Wrappers around `chrome.scripting` and `chrome.permissions` (`site-registry.js`) and the leftover-text storage key (`remaining.js`) |
-| `src/ui/tokens.css` | Panel, options | Design tokens for the extension pages |
+| `src/shared/` | Service worker, panel, options | Wrappers around `chrome.scripting` and `chrome.permissions` (`site-registry.js`) and the leftover-text storage key and value (`remaining.js`) |
+| `src/ui/tokens.css`, `src/ui/localize.js` | Panel, options | Design tokens and page localization for the extension pages |
+| `src/_locales/` | Manifest, every bundle | Interface messages in English and Traditional Chinese |
 | `scripts/` | Node.js | `build.mjs` builds the extension, `package.mjs` makes the release zip, `translations.mjs` checks translation sync, `icons.mjs` renders the PNG icons from the SVG logo |
 | `test/unit/`, `test/e2e/` | Node.js, Playwright | See [testing.md](testing.md) |
 
-The UI strings are currently Traditional Chinese only. This document quotes them with an English gloss.
+### Interface language
+
+- **Messages:** every user-visible string lives in `src/_locales/en/messages.json` and `src/_locales/zh_TW/messages.json`, in Chrome's `_locales` format. The manifest uses `__MSG_extName__`, `__MSG_extDescription__` and `__MSG_actionTitle__` with `default_locale` `en`.
+- **Runtime:** `src/core/i18n.js` imports both files into the bundles. `createTranslator(locale)` returns `t(key, values)`, which fills `{name}` placeholders and uses a `<key>_one` message when `count` is 1. Pages are localized by `src/ui/localize.js` through `data-i18n` and `data-i18n-attr` attributes.
+- **Choice:** the `uiLanguage` setting is `auto`, `en` or `zh_TW`. `auto` picks Traditional Chinese for any `zh` browser language and English otherwise. The content script, panel and options page re-create their translator whenever settings change, so a switch applies to the next dialog, toast or page without reloading. `chrome.i18n` is not used at runtime because it always follows the browser language.
+- **Consistency:** `test/unit/i18n.test.js` fails if the two files differ in keys or placeholders, or if a message is not valid for Chrome.
+
+This document quotes Traditional Chinese labels with their English text.
 
 ## Data flow
 
@@ -70,9 +78,9 @@ The UI strings are currently Traditional Chinese only. This document quotes them
 | Type | From → to | Payload | Response |
 |---|---|---|---|
 | `typeshuttle/status` | panel → content script | — | `{ ready, busy }` |
-| `typeshuttle/send-direct` | panel → content script | `text`, `sendTabKey`, `newlineKey` | `{ accepted: true }` or `{ accepted: false, reason: 'busy' \| 'not-ready' }` |
+| `typeshuttle/send-direct` | panel → content script | `text`, `sendTabKey`, `newlineKey`, optional `leadingImeCommit` | `{ accepted: true }` or `{ accepted: false, reason: 'busy' \| 'not-ready' }` |
 | `typeshuttle/send-precise` | panel → content script | `dataBase64`, `createdAt`, `fileName` (or `null`) | Same as above |
-| `typeshuttle/store-remaining` | content script → service worker | `text` | `{ ok }` |
+| `typeshuttle/store-remaining` | content script → service worker | `text`, `pendingImeCommit` | `{ ok }` |
 
 Receivers ignore messages from other extensions (`sender.id` check).
 
@@ -114,18 +122,21 @@ Direct typing applies these rules in order (`normalizeForTyping`):
 `segment.js` builds the plan:
 
 - Text is split on `\n`, with a `newline` step between lines.
+- With the `imeCommitEnter` setting, a line that contains a non-ASCII character is followed by an `imeCommit` step before its `newline` step. It presses the same key as the newline (Enter, or Shift+Enter when chosen), which the remote IME may use up (F13 in [clients.md](clients.md); it is not consistent, so blank lines can remain), and adds nothing to the unsent remainder. The last line gets no commit because no newline follows it. If a send stops right before an `imeCommit` step, the stored remainder is marked `pendingImeCommit`, and sending it unchanged from the panel starts with that commit.
 - Each line is cut into `text` chunks of at most `chunkSize` grapheme clusters, so emoji and combining sequences are never split.
 - When Tab keys are enabled, each line is also split on tabs with `tab` steps in between.
 
-`sender.js` executes one step at a time and then waits: `lineDelayMs` after a newline, `chunkDelayMs` after anything else. The duration estimate shown to users is the sum of these delays.
+`sender.js` executes one step at a time and then waits: `lineDelayMs` after a `newline` or `imeCommit` step, `chunkDelayMs` after anything else. The duration estimate shown to users is the sum of these delays.
 
 | Speed | `chunkSize` | `chunkDelayMs` | `lineDelayMs` |
 |---|---|---|---|
-| 快 (fast) | 200 | 20 | 40 |
-| 標準 (normal, default) | 100 | 40 | 80 |
-| 保守 (safe) | 40 | 80 | 150 |
+| 快 (fast) | 100 | 40 | 80 |
+| 標準 (normal, default) | 40 | 80 | 150 |
+| 保守 (safe) | 20 | 100 | 250 |
 
-The runner checks the abort signal before every step. It stops with status `error` if the adapter throws. Otherwise it returns `done` or `aborted`, the current line number, and the unsent remainder rebuilt from the remaining steps. The remainder is the normalized text, so tabs are already expanded.
+標準 (normal) and 快 (fast) come from a live Citrix session ([clients.md](clients.md#typing-speed)); 保守 (safe) was not measured and is slower than 標準 (normal) in every value. Precise transfer uses `precisePacingFor`, which caps the speed at 標準 (normal) because a single dropped key corrupts the file.
+
+The runner checks the abort signal before every step. It stops with status `error` if the adapter throws. Otherwise it returns `done` or `aborted`, the current line number, the unsent remainder rebuilt from the remaining steps, and `pendingImeCommit` when the next step was an IME commit. The remainder is the normalized text, so tabs are already expanded.
 
 ### Adapter contract
 
@@ -142,7 +153,7 @@ The controller and runner only talk to an adapter:
 
 - It looks up `#CitrixClientImeBuffer` on every call, so a rebuilt element is still found (F1).
 - **`insertText`:** focuses that element and dispatches an empty `InputEvent('input', { data: '', inputType: 'insertText' })` (F5). It then calls `document.execCommand('insertText', false, text)` (F2, F4) and throws a user-facing error if the browser refuses.
-- **`pressNewline` and `pressTab`:** dispatch untrusted `KeyboardEvent`s (F6–F8). Enter sends `keydown`, `keypress` and `keyup`; Tab sends `keydown` and `keyup`; Shift+Enter wraps them in Shift `keydown`/`keyup`. `keyCode`, `charCode` and `which` are passed to the constructor (F9).
+- **`pressNewline` and `pressTab`:** dispatch untrusted `KeyboardEvent`s (F6–F8). Enter and Tab send `keydown` and `keyup` only, never `keypress` (F10); Shift+Enter wraps them in Shift `keydown`/`keyup`. `keyCode` and `which` are passed to the constructor (F9). Before inserting text, `insertText` sets the buffer to `white-space: pre` so Chrome keeps plain spaces (F11).
 
 ## Precise transfer
 
@@ -160,7 +171,7 @@ Both are limited by `maxPreciseBytes` (default 1 MiB, adjustable up to 20 MiB).
    - Text gets `.txt`.
    - A file's name is appended after `_`. Characters outside `[A-Za-z0-9._-]` become `_`, runs of dots collapse to one, leading underscores are dropped, and the name is capped at 80 characters.
    - A name that is empty after sanitizing gives `.bin`. A name starting with a dot is appended without the underscore.
-4. It types this command through the normal plan runner, with Enter between lines and Tab keys off:
+4. It types this command through the normal plan runner, with Enter between lines, Tab keys off, and the speed capped at 標準 (normal):
 
 ```bash
 mkdir -p ~/typeshuttle-inbox && base64 -d <<'TYPESHUTTLE_EOF' | gunzip > ~/typeshuttle-inbox/<file name>
@@ -183,7 +194,7 @@ Constraints:
 
 **Confirmation dialog (hotkey sends).**
 
-- **Content:** it previews the first 8 lines, shows line and character counts and an estimated duration, and adds notices. The notices warn that each line runs immediately in a terminal, suggest precise transfer for long text, and flag text over the limit.
+- **Content:** it previews the first 8 lines, shows line and character counts and an estimated duration, and adds notices. The notices warn that each line runs immediately in a terminal, warn that non-ASCII text can be reordered or lose line breaks on Windows sessions (F12, F13), suggest precise transfer for long text, and flag text over the limit. The panel shows the same non-ASCII notice.
 - **Keys:** while the dialog is open, every trusted `keydown` is captured and kept from the client. The keymap uses physical codes: `Enter` and `NumpadEnter` send, `Escape` cancels, `KeyP` switches to precise transfer. The `keyup` of the chosen key is swallowed, and auto-repeat is ignored.
 - **Over the limit:** the send action is disabled.
 
@@ -204,7 +215,7 @@ Events dispatched by the extension are untrusted and never count.
 
 **Leftover text.** After a direct send stops early, the toast shows the line where it stopped.
 
-- **Where it goes:** the unsent text is stored in `chrome.storage.session` under `remaining:<tabId>`. That storage lives in memory only and is cleared when the browser closes.
+- **Where it goes:** the unsent text is stored in `chrome.storage.session` under `remaining:<tabId>`, as `{ text, pendingImeCommit }`. That storage lives in memory only and is cleared when the browser closes.
 - **How it comes back:** the panel loads it into the text box with a banner.
 - **When it is removed:** when a panel send is accepted, when the user clicks 「清除」 (Clear), or when the tab closes.
 

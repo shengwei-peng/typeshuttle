@@ -41,7 +41,7 @@ export const test = base.extend({
   },
 
   citrix: async ({ context, server, serviceWorker, settings }, use) => {
-    await serviceWorker.evaluate((values) => chrome.storage.sync.set(values), settings);
+    await serviceWorker.evaluate((values) => chrome.storage.sync.set(values), { uiLanguage: 'zh_TW', ...settings });
     await expect.poll(() => serviceWorker.evaluate(
       async () => (await chrome.scripting.getRegisteredContentScripts()).length,
     )).toBeGreaterThan(0);

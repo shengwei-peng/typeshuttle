@@ -1,5 +1,3 @@
-// Ctrl+Shift+V (Cmd+Shift+V on macOS) interception (docs/ARCHITECTURE.md#triggers):
-// the keydown is kept from the client but its default action is preserved, so the browser fires a paste event carrying the clipboard text.
 import { isPasteHotkey } from '../core/hotkey.js';
 
 const PASTE_ACCEPT_MS = 1500;
@@ -34,7 +32,6 @@ export function installPasteHotkey({ win, isMac, isActive, onText, onMissedPaste
   };
 
   const onPaste = (event) => {
-    // Accept only paste events the browser fires for the physical shortcut; synthetic paste events from page scripts are ignored.
     if (!event.isTrusted || performance.now() > armedUntil) return;
     disarm();
     event.preventDefault();

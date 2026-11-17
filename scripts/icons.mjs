@@ -1,6 +1,3 @@
-// Renders the extension icons in assets/icons from the SVG sources.
-// assets/logo-small.svg is drawn on a 16 px grid for the toolbar sizes; assets/logo.svg is used for larger sizes.
-// The 128 px icon keeps a 16 px transparent margin, as the Chrome Web Store asks.
 import { chromium } from '@playwright/test';
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';

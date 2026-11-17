@@ -1,17 +1,15 @@
-// Aborts a send when the user interacts (docs/ARCHITECTURE.md#safety). Keys the extension dispatches are untrusted and never trigger it.
 import { swallowNextKeyUp } from './keys.js';
 
 export const INTERRUPT_REASONS = Object.freeze({
-  keyboard: '偵測到按鍵',
-  mouse: '偵測到滑鼠點擊',
-  hidden: '分頁被切換',
-  blur: '視窗失去焦點',
+  keyboard: 'interruptKeyboard',
+  mouse: 'interruptMouse',
+  hidden: 'interruptHidden',
+  blur: 'interruptBlur',
 });
 
 export function watchInterruptions({ win, doc, onInterrupt }) {
   const onKeyDown = (event) => {
     if (!event.isTrusted) return;
-    // The key used to abort (and its release) is not forwarded to the remote session.
     event.preventDefault();
     event.stopImmediatePropagation();
     swallowNextKeyUp(win, event.code);
@@ -38,7 +36,6 @@ export function watchInterruptions({ win, doc, onInterrupt }) {
   };
 }
 
-// When sending from the panel, focus returns to the remote desktop tab only after the panel closes; wait for it before typing.
 export function waitForPageFocus({ win, doc, timeoutMs }) {
   const focused = () => doc.visibilityState === 'visible' && doc.hasFocus();
   if (focused()) return Promise.resolve(true);

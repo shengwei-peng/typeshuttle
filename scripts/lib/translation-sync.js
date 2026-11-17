@@ -1,6 +1,3 @@
-// Keeps translated docs in sync with their English source. English is the single source of truth:
-// each translation starts with a stamp holding the hash of the English text it was reviewed against,
-// and the check fails once the English file changes until someone updates the translation and re-stamps it.
 import { createHash } from 'node:crypto';
 import path from 'node:path';
 
@@ -42,7 +39,6 @@ export function checkTranslation({ path: file, text, readSource }) {
   return result(stamp.hash === hashSource(sourceText) ? 'ok' : 'stale');
 }
 
-// readDir(relativeDir) returns directory entries shaped like fs.Dirent ({ name, isDirectory() }).
 export function findTranslations(readDir, dir = '') {
   return readDir(dir).flatMap((entry) => {
     const relative = path.posix.join(dir, entry.name);
@@ -51,7 +47,6 @@ export function findTranslations(readDir, dir = '') {
   });
 }
 
-// Converts an absolute path to a POSIX path relative to root, or null when it is not inside root.
 export function toRepoPath(root, absolute) {
   const relative = path.relative(root, absolute);
   if (relative === '' || relative.startsWith('..') || path.isAbsolute(relative)) return null;

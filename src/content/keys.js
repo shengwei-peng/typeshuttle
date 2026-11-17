@@ -1,4 +1,3 @@
-// Tracks which physical keys the user is holding and waits until all of them are released (docs/ARCHITECTURE.md#safety).
 import { nextHeldKeys } from '../core/hotkey.js';
 
 const POLL_INTERVAL_MS = 20;
@@ -11,7 +10,6 @@ export function createKeyTracker(win) {
   };
   const reset = () => { held = nextHeldKeys(held, { type: 'blur' }); };
 
-  // Must be registered before other capture listeners so it still sees keys they stop.
   win.addEventListener('keydown', track, true);
   win.addEventListener('keyup', track, true);
   win.addEventListener('blur', reset);
@@ -34,7 +32,6 @@ export function createKeyTracker(win) {
   };
 }
 
-// When a keydown is kept from the client, swallow its keyup too so the remote session never gets an unpaired release.
 export function swallowNextKeyUp(win, code) {
   const onKeyUp = (event) => {
     if (event.code !== code) return;

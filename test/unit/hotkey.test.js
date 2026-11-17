@@ -36,6 +36,15 @@ test('nextHeldKeys tracks held physical keys without mutating the previous state
   assert.deepEqual([...released], ['KeyV']);
 });
 
+test('nextHeldKeys forgets non-modifier keys when Meta is released because macOS sends no keyup for them', () => {
+  const held = new Set(['MetaLeft', 'ShiftLeft', 'KeyV']);
+
+  const released = nextHeldKeys(held, { type: 'keyup', code: 'MetaLeft' });
+
+  assert.deepEqual([...released], ['ShiftLeft']);
+  assert.deepEqual([...nextHeldKeys(held, { type: 'keyup', code: 'ShiftLeft' })].sort(), ['KeyV', 'MetaLeft']);
+});
+
 test('nextHeldKeys ignores events without a physical key code and clears on blur', () => {
   const state = new Set(['ShiftLeft']);
   assert.equal(nextHeldKeys(state, { type: 'keydown', code: '' }), state);

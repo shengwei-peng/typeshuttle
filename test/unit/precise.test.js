@@ -74,6 +74,9 @@ test('buildPreciseCommand rejects unsafe directory or filename', () => {
   assert.throws(() => buildPreciseCommand({ dir: '~/x; rm -rf /', filename: 'f', base64Lines: [] }), /directory/);
   assert.throws(() => buildPreciseCommand({ dir: '~/x', filename: 'a b', base64Lines: [] }), /filename/);
   assert.throws(() => buildPreciseCommand({ dir: '~/../x', filename: 'f', base64Lines: [] }), /directory/);
+  assert.throws(() => buildPreciseCommand({ dir: '-v', filename: 'f', base64Lines: [] }), /directory/);
+  assert.throws(() => buildPreciseCommand({ dir: '~/inbox/-p', filename: 'f', base64Lines: [] }), /directory/);
+  assert.doesNotThrow(() => buildPreciseCommand({ dir: '~/.cache/my-inbox_2', filename: 'f', base64Lines: [] }));
 });
 
 test('preparePrecise payload decodes back to the original bytes with matching checksum', async () => {
@@ -95,4 +98,10 @@ test('preparePrecise keeps the sanitized original file name', async () => {
   const result = await preparePrecise({ bytes: new Uint8Array([0, 255]), date: DATE, dir: '/tmp/typeshuttle', originalName: 'data.bin' });
   assert.equal(result.filename, '2026-09-14_153012_data.bin');
   assert.match(result.commandText, /> \/tmp\/typeshuttle\/2026-09-14_153012_data\.bin\n/);
+});
+
+test('unsafe precise transfer input carries a message key for the interface', () => {
+  assert.throws(() => buildPreciseCommand({ dir: '~/a b', filename: 'x.txt', base64Lines: [] }), (error) => error.messageKey === 'errorUnsafeDir' && error.values.dir === '~/a b');
+  assert.throws(() => buildPreciseCommand({ dir: '~/a', filename: 'x y', base64Lines: [] }), (error) => error.messageKey === 'errorUnsafeFilename');
+  assert.throws(() => fromBase64('***'), (error) => error.messageKey === 'errorInvalidBase64');
 });

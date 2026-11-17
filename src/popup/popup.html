@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="zh-Hant">
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <title>TypeShuttle</title>
@@ -10,7 +10,7 @@
   <header class="top">
     <span class="brand">TypeShuttle</span>
     <span id="site" class="site muted"></span>
-    <button id="open-options" type="button" class="link">設定</button>
+    <button id="open-options" type="button" class="link" data-i18n="popupSettings">Settings</button>
   </header>
 
   <main>
@@ -22,50 +22,50 @@
 
     <section id="ready" class="ready" hidden>
       <p id="remaining-banner" class="notice warn" hidden>
-        已載入上次中止時還沒送出的內容。
-        <button id="clear-remaining" type="button" class="link">清除</button>
+        <span data-i18n="remainingLoaded">Loaded the text that was left unsent when the last send stopped.</span>
+        <button id="clear-remaining" type="button" class="link" data-i18n="remainingClear">Clear</button>
       </p>
 
-      <div class="modes" role="tablist" aria-label="送出方式">
-        <button id="mode-direct" type="button" role="tab" aria-selected="true" aria-controls="ready">直接打字</button>
-        <button id="mode-precise" type="button" role="tab" aria-selected="false" aria-controls="ready">精確傳輸</button>
+      <div class="modes" role="tablist" aria-label="Send mode" data-i18n-attr="aria-label:modesLabel">
+        <button id="mode-direct" type="button" role="tab" aria-selected="true" aria-controls="ready" data-i18n="modeDirect">Direct typing</button>
+        <button id="mode-precise" type="button" role="tab" aria-selected="false" aria-controls="ready" data-i18n="modePrecise">Precise transfer</button>
       </div>
 
-      <p id="precise-note" class="muted small" hidden>
-        接收端必須是遠端的 bash 終端機，請先把遠端游標放在提示字元後面。內容會壓縮後以 base64 送出，完整保留每個位元組。
-      </p>
+      <p id="precise-note" class="muted small" hidden data-i18n="preciseNote">The receiving end must be a bash terminal on the remote desktop.</p>
 
-      <textarea id="text" rows="7" spellcheck="false" placeholder="貼上要送出的文字" aria-label="要送出的內容"></textarea>
+      <textarea id="text" rows="7" spellcheck="false" placeholder="Paste the text to send" aria-label="Content to send" data-i18n-attr="placeholder:textPlaceholder;aria-label:textLabel"></textarea>
 
       <div id="file-row" class="file-row" hidden>
-        <label for="file">或選擇檔案</label>
-        <input id="file" type="file">
-        <button id="clear-file" type="button" class="link" hidden>移除檔案</button>
+        <span data-i18n="fileLabel">Or send a file:</span>
+        <input id="file" type="file" hidden>
+        <button id="choose-file" type="button" data-i18n="fileChoose">Choose a file</button>
+        <span id="file-name" class="file-name"></span>
+        <button id="clear-file" type="button" class="link" hidden data-i18n="fileRemove">Remove file</button>
       </div>
 
       <p id="stats" class="stats"></p>
 
       <div id="direct-options" class="options">
-        <label class="check"><input id="send-tab" type="checkbox"> 這次送出 Tab 鍵（Makefile 等）</label>
-        <label class="inline" for="newline-key">換行鍵
+        <label class="check"><input id="send-tab" type="checkbox"> <span data-i18n="sendTabLabel">Send the Tab key this time (Makefiles and similar)</span></label>
+        <label class="inline" for="newline-key"><span data-i18n="newlineKeyLabel">Newline key</span>
           <select id="newline-key">
             <option value="enter">Enter</option>
-            <option value="shift-enter">Shift+Enter（聊天程式）</option>
+            <option value="shift-enter" data-i18n="newlineShiftEnterChat">Shift+Enter (chat apps)</option>
           </select>
         </label>
       </div>
 
       <dl id="precise-details" class="details" hidden>
-        <div><dt>存到遠端</dt><dd id="detail-path" class="mono"></dd></div>
-        <div><dt>原始大小</dt><dd id="detail-size"></dd></div>
-        <div><dt>需要打字</dt><dd id="detail-lines"></dd></div>
+        <div><dt data-i18n="detailPath">Saved to</dt><dd id="detail-path" class="mono"></dd></div>
+        <div><dt data-i18n="detailSize">Original size</dt><dd id="detail-size"></dd></div>
+        <div><dt data-i18n="detailTyping">To type</dt><dd id="detail-lines"></dd></div>
         <div><dt>sha256</dt><dd id="detail-sha" class="mono hash"></dd></div>
       </dl>
 
       <p id="warning" class="notice" hidden></p>
 
-      <button id="send" type="button" class="primary send">送出到遠端</button>
-      <p class="hint muted">在遠端桌面分頁按 <span id="hotkey-hint"><kbd>Ctrl</kbd> <kbd>Shift</kbd> <kbd>V</kbd></span> 可直接送出剪貼簿。</p>
+      <button id="send" type="button" class="primary send" data-i18n="sendDirect">Send to remote</button>
+      <p class="hint muted"><span data-i18n="hotkeyHintBefore">On the remote desktop tab, press</span> <span id="hotkey-hint"><kbd>Ctrl</kbd> <kbd>Shift</kbd> <kbd>V</kbd></span> <span data-i18n="hotkeyHintAfter">to send the clipboard directly.</span></p>
     </section>
   </main>
 

@@ -1,24 +1,24 @@
-// Injection adapter for Citrix Workspace app for HTML5, based on the behaviors in docs/clients.md (F1, F2, F4-F9).
-
 const IME_BUFFER_ID = 'CitrixClientImeBuffer';
 
-const ENTER = { key: 'Enter', code: 'Enter', keyCode: 13, withKeypress: true };
-const TAB = { key: 'Tab', code: 'Tab', keyCode: 9, withKeypress: false };
-const SHIFT = { key: 'Shift', code: 'ShiftLeft', keyCode: 16, withKeypress: false };
+const ENTER = { key: 'Enter', code: 'Enter', keyCode: 13 };
+const TAB = { key: 'Tab', code: 'Tab', keyCode: 9 };
+const SHIFT = { key: 'Shift', code: 'ShiftLeft', keyCode: 16 };
+const PRESERVED_WHITE_SPACE = ['pre', 'pre-wrap', 'break-spaces'];
 
 function findImeBuffer(doc) {
   return doc.getElementById(IME_BUFFER_ID);
 }
 
+function preserveSpaces(buffer, doc) {
+  const current = doc.defaultView?.getComputedStyle(buffer).whiteSpace;
+  if (!PRESERVED_WHITE_SPACE.includes(current)) buffer.style.setProperty('white-space', 'pre', 'important');
+}
+
 function dispatchKey(target, type, spec, shiftKey) {
-  // keyCode / charCode / which must be passed to the constructor (legacy fields Chrome still honors): content scripts run in an isolated world,
-  // so properties added with Object.defineProperty are invisible to the page's own scripts.
-  const charCode = type === 'keypress' ? spec.keyCode : 0;
   target.dispatchEvent(new KeyboardEvent(type, {
     key: spec.key,
     code: spec.code,
     keyCode: spec.keyCode,
-    charCode,
     which: spec.keyCode,
     shiftKey,
     bubbles: true,
@@ -30,15 +30,14 @@ function dispatchKey(target, type, spec, shiftKey) {
 function tapKey(target, spec, { shift = false } = {}) {
   if (shift) dispatchKey(target, 'keydown', SHIFT, true);
   dispatchKey(target, 'keydown', spec, shift);
-  if (spec.withKeypress) dispatchKey(target, 'keypress', spec, shift);
   dispatchKey(target, 'keyup', spec, shift);
   if (shift) dispatchKey(target, 'keyup', SHIFT, false);
 }
 
-export function createCitrixAdapter(doc) {
+export function createCitrixAdapter(doc, { getT }) {
   const requireBuffer = () => {
     const buffer = findImeBuffer(doc);
-    if (!buffer) throw new Error('找不到遠端桌面的輸入區，Citrix 連線可能已中斷');
+    if (!buffer) throw new Error(getT()('adapterNoInput'));
     return buffer;
   };
 
@@ -47,11 +46,11 @@ export function createCitrixAdapter(doc) {
 
     insertText(text) {
       const buffer = requireBuffer();
+      preserveSpaces(buffer, doc);
       buffer.focus();
-      // F5: after any key event Citrix swallows the next text input, so feed it an empty one first.
       buffer.dispatchEvent(new InputEvent('input', { data: '', inputType: 'insertText', bubbles: true }));
       if (!doc.execCommand('insertText', false, text)) {
-        throw new Error('瀏覽器拒絕插入文字，請點一下遠端桌面畫面後再試');
+        throw new Error(getT()('adapterInsertRefused'));
       }
     },
 
