@@ -8,7 +8,6 @@ All notable changes to this project are documented in this file. The format foll
 ### Features
 
 * add an English interface alongside Traditional Chinese, with an interface language setting ([775c4c2](https://github.com/shengwei-peng/typeshuttle/commit/775c4c2c6a9205dbfa57a2f2b8db1ac1e93446ff))
-* bilingual interface, retuned typing speeds and Citrix fixes ([775c4c2](https://github.com/shengwei-peng/typeshuttle/commit/775c4c2c6a9205dbfa57a2f2b8db1ac1e93446ff))
 * warn when text contains non-ASCII characters and add an optional extra Enter after such lines ([775c4c2](https://github.com/shengwei-peng/typeshuttle/commit/775c4c2c6a9205dbfa57a2f2b8db1ac1e93446ff))
 
 
