@@ -2,7 +2,7 @@
 
 TypeShuttle types text from your computer into a browser-based remote desktop, or rebuilds a small file there byte for byte. It only sends one way: from your computer to the remote session.
 
-The extension's interface is currently in Traditional Chinese. Labels in this guide are shown as they appear, followed by an English gloss.
+The interface is available in English and Traditional Chinese. It follows your browser's language; to change it, open **Settings** and choose **Interface language**. This guide uses the English labels.
 
 ## Contents
 
@@ -34,7 +34,7 @@ If you cannot find Developer mode, or the extension shows as disabled, your brow
 You do this once for each remote desktop address.
 
 1. Sign in and open your remote desktop in the browser.
-2. Click the **TypeShuttle** toolbar icon and choose **在此網站啟用** (Enable on this site).
+2. Click the **TypeShuttle** toolbar icon and choose **Enable on this site**.
 3. When the browser asks for access to the site, click **Allow**.
 4. When the panel shows a text box, you are done. You do not need to reload the page, and the remote session stays connected.
 
@@ -47,7 +47,7 @@ TypeShuttle gets access to that one site only. Other sites are not affected.
 3. Press <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>V</kbd> (<kbd>Cmd</kbd>+<kbd>Shift</kbd>+<kbd>V</kbd> on macOS).
    - **A single short line** is sent right away.
    - **Multi-line text, or more than 500 characters,** opens a confirmation dialog at the top of the page. Check the preview, then press <kbd>Enter</kbd> to send, <kbd>Esc</kbd> to cancel, or <kbd>P</kbd> to switch to [precise transfer](#5-precise-transfer-for-code-and-files). Precise transfer needs the remote cursor to be in a terminal.
-4. Progress appears in the bottom-right corner while typing. **已送出** (Sent) appears in the top-right corner when it finishes.
+4. Progress appears in the bottom-right corner while typing. **Sent** appears in the top-right corner when it finishes.
 
 > [!IMPORTANT]
 > **Do not touch the keyboard or mouse while typing.** Any key press or click stops typing immediately. This keeps your own keystrokes from mixing in and stops text from landing in the wrong place.
@@ -58,7 +58,7 @@ The notification tells you which line it stopped at, and **the unsent text is lo
 
 1. Move the remote cursor back to where typing stopped.
 2. Click the TypeShuttle toolbar icon. The panel already holds the rest of the text.
-3. Click **送出到遠端** (Send to remote).
+3. Click **Send to remote**.
 
 ### Be careful in terminals
 
@@ -68,10 +68,10 @@ When the remote cursor is in a terminal, **each line of multi-line text runs as 
 
 Click the TypeShuttle toolbar icon to open the panel. Use it when you want to review or edit text first, or to send a file.
 
-- **直接打字** (Direct typing): paste or edit the text. Check the line count, character count and estimated time, then click **送出到遠端** (Send to remote).
-  - **這次送出 Tab 鍵（Makefile 等）** (Send Tab keys this time, for Makefiles and similar): by default each Tab becomes 4 spaces. Tick this only for content that needs real Tab characters.
-  - **換行鍵** (Newline key): in chat apps such as Teams or Slack, Enter sends the message. Choose Shift+Enter to paste several lines as one message.
-- **精確傳輸** (Precise transfer): see the next section.
+- **Direct typing**: paste or edit the text. Check the line count, character count and estimated time, then click **Send to remote**.
+  - **Send the Tab key this time (Makefiles and similar)**: by default each Tab becomes 4 spaces. Tick this only for content that needs real Tab characters.
+  - **Newline key**: in chat apps such as Teams or Slack, Enter sends the message. Choose Shift+Enter to paste several lines as one message.
+- **Precise transfer**: see the next section.
 
 ## 5. Precise transfer for code and files
 
@@ -82,10 +82,10 @@ When text is typed directly, remote programs may "help" by indenting it or closi
 **Steps:**
 
 1. Open a **terminal** (bash) in the remote session and leave the cursor at the prompt.
-2. Click the TypeShuttle icon and switch to **精確傳輸** (Precise transfer).
-3. Paste text, or click **或選擇檔案** (or choose a file).
+2. Click the TypeShuttle icon and switch to **Precise transfer**.
+3. Paste text, or click **Choose a file**.
 4. The panel shows where the file will be saved, its original size, how many lines will be typed, the estimated time and the **sha256**.
-5. Click **送出到遠端終端機** (Send to remote terminal).
+5. Click **Send to remote terminal**.
 6. When it finishes, the remote terminal prints a sha256. **If it matches the value in the panel, the file is exactly right.**
 
 Files are saved in `~/typeshuttle-inbox/` on the remote machine. Each name starts with the date and time, for example `2026-09-14_153012_deploy.sh`. Only letters, digits, `.`, `_` and `-` are kept from the original file name; other characters are dropped, but the extension stays.
@@ -116,33 +116,40 @@ Editors react to typing: they auto-indent, close brackets and accept suggestions
 
 ## 7. Settings
 
-Click **設定** (Settings) in the top-right corner of the panel. Changes are saved automatically.
+Click **Settings** in the top-right corner of the panel. Changes are saved automatically.
 
 | Setting | Default | Notes |
 |---|---|---|
-| **送出速度** (Typing speed) | **標準** (Normal) | Switch to **保守** (Safe) if characters go missing or arrive out of order. **快** (Fast) suits stable connections and short text. |
-| **Tab 轉成幾個空格** (Spaces per Tab) | 4 | |
-| **預設換行鍵** (Default newline key) | Enter | Choose Shift+Enter if you mostly paste into remote chat apps. |
-| **保留結尾換行** (Keep trailing newline) | Off | When on, Enter is pressed after the last line too. |
-| **超過幾個字要先確認** (Confirm above this many characters) | 500 | Multi-line text always asks for confirmation. |
-| **超過幾個字建議改用精確傳輸** (Suggest precise transfer above this many characters) | 2,000 | |
-| **直接打字上限（字）** (Direct typing limit, characters) | 50,000 | |
-| **精確傳輸上限（KB）** (Precise transfer limit, KB) | 1,024 | |
-| **遠端存檔目錄** (Remote folder) | `~/typeshuttle-inbox` | Letters, digits and `. _ - /` only. May start with `~/`. |
-| **已啟用的網站** (Enabled sites) | | Removing a site also revokes its access. |
+| **Interface language** | **Same as the browser** | Chinese browsers get Traditional Chinese, all others English. |
+| **Typing speed** | **Normal** | **Normal** was checked on a live Citrix session with 200 lines into PuTTY without losing a key. **Fast** is only for short text, or for remote browsers and editors; terminals such as PuTTY can drop whole runs of keys at that speed. Switch to **Safe** if characters still go missing. Precise transfer never runs faster than **Normal**. |
+| **Spaces per Tab** | 4 | |
+| **Default newline key** | Enter | Choose Shift+Enter if you mostly paste into remote chat apps. |
+| **Keep trailing newline** | Off | When on, Enter is pressed after the last line too. |
+| **Extra Enter after lines with non-ASCII characters** | Off | Consider it only when a Chinese input method is active on a Windows remote desktop and line breaks after Chinese or other non-ASCII text disappear in PuTTY or similar terminals. The line break is not dropped every time, so blank lines can still appear, and other programs always get them. Use precise transfer for text that must be exact. |
+| **Ask before sending more than this many characters** | 500 | Multi-line text always asks for confirmation. |
+| **Suggest precise transfer above this many characters** | 2,000 | |
+| **Direct typing limit (characters)** | 50,000 | |
+| **Precise transfer limit (KB)** | 1,024 | |
+| **Remote folder** | `~/typeshuttle-inbox` | Letters, digits and `. _ - /` only, and no folder name may start with `-`. May start with `~/`. |
+| **Enabled sites** | | Removing a site also revokes its access. |
 
 ## 8. Troubleshooting
 
 **Nothing happens when I press Ctrl+Shift+V**
-- Click the TypeShuttle icon. If the panel offers **在此網站啟用** (Enable on this site), this address is not enabled yet. A different address, such as a new server, needs enabling again.
+- Click the TypeShuttle icon. If the panel offers **Enable on this site**, this address is not enabled yet. A different address, such as a new server, needs enabling again.
 - Click once inside the remote session, then press the hotkey again.
-- **剪貼簿是空的，或只有圖片等非文字內容。** (The clipboard is empty or has no text) means there was nothing to type. Copying an image does not work.
+- **Nothing to send** means there was nothing to type. Copying an image does not work.
 
-**Characters go missing or arrive out of order**
-Set **送出速度** (Typing speed) to **保守** (Safe).
+**Characters go missing**
+Use **Normal** or **Safe** for **Typing speed**. **Fast** can drop keys in remote terminals.
 
-**Will the remote input method mangle Chinese or Japanese text?**
-No. TypeShuttle sends the text itself rather than key codes, so the remote input method's mode does not matter on clients that accept text input. See [clients](clients.md) for details.
+**Chinese or Japanese text comes out in the wrong order, or a line break after it disappears**
+TypeShuttle sends the text itself rather than key codes, so the remote input method's Chinese or English mode does not turn letters into Zhuyin. On Windows remote desktops, though, the remote input method still handles non-ASCII characters and some programs mishandle them:
+
+- In Chrome on the remote side, Han characters that directly follow full-width punctuation or kana can be moved later, so `你好，世界。` can arrive as `你好，。世界`.
+- In PuTTY and similar terminals, while a Chinese input method is active on the remote side, the Enter after a line that contains non-ASCII characters is often used up, so the next line is joined to it. It does not happen every time. **Extra Enter after lines with non-ASCII characters** joins fewer lines but can leave blank lines. With only an English keyboard on the remote side, no line breaks were lost in testing.
+
+Check the result after sending. For text that must be exact in a terminal, use [precise transfer](#5-precise-transfer-for-code-and-files), which types only ASCII. See [clients](clients.md#citrix-workspace-app-for-html5) for details.
 
 **Every line of my text ran as a command**
 The remote cursor was in a terminal. To create a file from a terminal, use [precise transfer](#5-precise-transfer-for-code-and-files).
@@ -153,8 +160,8 @@ The browser may be managed by an organization. Open `chrome://management` (or `e
 **The browser asks me to disable developer mode extensions**
 Extensions installed with Load unpacked can trigger this prompt. Choose to keep the extension.
 
-**The panel says 找不到遠端桌面 (Remote desktop not found)**
-The remote session is not connected yet, or the connection dropped. When the remote screen appears, click **重新檢查** (Check again).
+**The panel says Remote desktop not found**
+The remote session is not connected yet, or the connection dropped. When the remote screen appears, click **Check again**.
 
 ## 9. Update and remove
 

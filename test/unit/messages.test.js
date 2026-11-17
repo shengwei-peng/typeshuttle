@@ -9,7 +9,7 @@ test('validateMessage accepts a status request', () => {
 test('validateMessage keeps only known fields of a direct send', () => {
   const message = { type: 'typeshuttle/send-direct', text: '中文', sendTabKey: false, newlineKey: 'shift-enter', extra: 1 };
   assert.deepEqual(validateMessage(message), {
-    type: 'typeshuttle/send-direct', text: '中文', sendTabKey: false, newlineKey: 'shift-enter',
+    type: 'typeshuttle/send-direct', text: '中文', sendTabKey: false, newlineKey: 'shift-enter', leadingImeCommit: false,
   });
 });
 
@@ -33,4 +33,11 @@ test('validateMessage rejects malformed precise sends and unknown types', () => 
   assert.equal(validateMessage({ ...base, dataBase64: undefined }), null);
   assert.equal(validateMessage({ type: 'typeshuttle/delete-everything' }), null);
   assert.equal(validateMessage(null), null);
+});
+
+test('validateMessage keeps a boolean leadingImeCommit and rejects other values', () => {
+  const base = { type: 'typeshuttle/send-direct', text: 'a', sendTabKey: false, newlineKey: 'enter' };
+  assert.equal(validateMessage({ ...base, leadingImeCommit: true }).leadingImeCommit, true);
+  assert.equal(validateMessage(base).leadingImeCommit, false);
+  assert.equal(validateMessage({ ...base, leadingImeCommit: 'yes' }), null);
 });

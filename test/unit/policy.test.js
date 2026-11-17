@@ -46,3 +46,8 @@ test('estimateDurationMs adds the delay that follows each step', () => {
   const plan = [{ type: 'text', value: 'a' }, { type: 'newline' }, { type: 'text', value: 'b' }, { type: 'tab' }];
   assert.equal(estimateDurationMs(plan, { chunkDelayMs: 40, lineDelayMs: 80 }), 40 + 80 + 40 + 40);
 });
+
+test('estimateDurationMs counts an IME commit step as a line break', () => {
+  const plan = [{ type: 'text', value: 'a' }, { type: 'imeCommit' }, { type: 'newline' }, { type: 'text', value: 'b' }];
+  assert.equal(estimateDurationMs(plan, { chunkDelayMs: 40, lineDelayMs: 80 }), 240);
+});

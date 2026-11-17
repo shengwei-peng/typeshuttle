@@ -1,6 +1,3 @@
-// Translation sync CLI.
-//   node scripts/translations.mjs check          fail if any translation is behind its English source
-//   node scripts/translations.mjs stamp <file>…  mark translations as reviewed against the current English text
 import { existsSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import {

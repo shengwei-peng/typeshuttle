@@ -1,0 +1,491 @@
+{
+  "extName": {
+    "message": "TypeShuttle"
+  },
+  "extDescription": {
+    "message": "把剪貼簿或檔案以打字方式送進瀏覽器版遠端桌面，支援 Citrix Workspace HTML5。"
+  },
+  "actionTitle": {
+    "message": "TypeShuttle"
+  },
+  "durationUnderSecond": {
+    "message": "不到 1 秒"
+  },
+  "durationSeconds": {
+    "message": "{seconds} 秒"
+  },
+  "durationMinutes": {
+    "message": "{minutes} 分"
+  },
+  "durationMinutesSeconds": {
+    "message": "{minutes} 分 {seconds} 秒"
+  },
+  "lineCount": {
+    "message": "{count} 行"
+  },
+  "lineCount_one": {
+    "message": "{count} 行"
+  },
+  "charCount": {
+    "message": "{count} 字"
+  },
+  "charCount_one": {
+    "message": "{count} 字"
+  },
+  "aboutDuration": {
+    "message": "約 {duration}"
+  },
+  "sendFailedTitle": {
+    "message": "送出失敗"
+  },
+  "confirmTitle": {
+    "message": "送出到遠端桌面？"
+  },
+  "confirmExceedsLimit": {
+    "message": "超過直接打字上限 {limit} 字。請改用精確傳輸（接收端需為遠端 bash 終端機）。"
+  },
+  "confirmSuggestPrecise": {
+    "message": "文字較長，建議改用精確傳輸：內容完整保留，還能用 sha256 核對（接收端需為遠端 bash 終端機）。"
+  },
+  "confirmTerminalLines": {
+    "message": "如果遠端游標在終端機裡，每一行都會立即執行。"
+  },
+  "nonAsciiNotice": {
+    "message": "內容含中文等非英數字。遠端是 Windows 時，部分程式會打亂這類字的順序；遠端啟用中文輸入法時，PuTTY 等終端機也常吃掉這類行尾的換行。送出後請檢查，終端機裡的重要內容建議改用精確傳輸。"
+  },
+  "actionCancel": {
+    "message": "取消"
+  },
+  "actionPrecise": {
+    "message": "改用精確傳輸"
+  },
+  "actionSend": {
+    "message": "送出"
+  },
+  "previewMoreLines": {
+    "message": "… 還有 {count} 行"
+  },
+  "previewMoreLines_one": {
+    "message": "… 還有 {count} 行"
+  },
+  "causeStopped": {
+    "message": "已中止"
+  },
+  "interruptKeyboard": {
+    "message": "偵測到按鍵"
+  },
+  "interruptMouse": {
+    "message": "偵測到滑鼠點擊"
+  },
+  "interruptHidden": {
+    "message": "分頁被切換"
+  },
+  "interruptBlur": {
+    "message": "視窗失去焦點"
+  },
+  "preciseStoppedTitle": {
+    "message": "精確傳輸已中止"
+  },
+  "preciseStoppedBody": {
+    "message": "{cause}。遠端終端機仍在等待資料，請在遠端按 Ctrl+C 結束後再重新送出。"
+  },
+  "stoppedTitle": {
+    "message": "已中止：停在第 {line} 行"
+  },
+  "stoppedBodyStored": {
+    "message": "{cause}。剩餘內容已放進工具列面板，把游標移回正確位置後，從面板再送出。"
+  },
+  "stoppedBodyNotStored": {
+    "message": "{cause}。剩餘內容無法放進面板，請重新複製後再送出。"
+  },
+  "preciseDoneTitle": {
+    "message": "已存到 {path}"
+  },
+  "preciseDoneBody": {
+    "message": "遠端終端機最後會印出 sha256，請與下列值核對："
+  },
+  "doneTitle": {
+    "message": "已送出"
+  },
+  "inputNotFoundTitle": {
+    "message": "找不到遠端桌面的輸入區"
+  },
+  "inputNotFoundBody": {
+    "message": "請確認 Citrix 已連線，並點一下遠端桌面畫面。"
+  },
+  "notStartedTitle": {
+    "message": "沒有開始送出"
+  },
+  "notStartedFocusKept": {
+    "message": "請點回遠端桌面分頁，再從工具列面板送出一次（內容已保留在面板）。"
+  },
+  "notStartedFocus": {
+    "message": "請點回遠端桌面分頁，再從工具列面板重新送出。"
+  },
+  "notStartedKeysHeld": {
+    "message": "偵測到有按鍵沒有放開。請放開所有按鍵後再試一次。"
+  },
+  "notStartedKeysHeldKept": {
+    "message": "偵測到有按鍵沒有放開。請放開所有按鍵，再從工具列面板送出一次（內容已保留在面板）。"
+  },
+  "notStartedFocusHotkey": {
+    "message": "遠端桌面分頁失去焦點。請點一下遠端桌面畫面，再按一次快捷鍵。"
+  },
+  "inputNotFoundKept": {
+    "message": "請確認 Citrix 已連線，點一下遠端桌面畫面，再從工具列面板送出一次（內容已保留在面板）。"
+  },
+  "preciseTooLarge": {
+    "message": "內容 {size} 超過精確傳輸上限 {limit}"
+  },
+  "emptyTitle": {
+    "message": "沒有可送出的文字"
+  },
+  "emptyBody": {
+    "message": "剪貼簿是空的，或只有圖片等非文字內容。"
+  },
+  "overLimitTitle": {
+    "message": "文字超過直接打字上限"
+  },
+  "overLimitBody": {
+    "message": "上限 {limit} 字，請改用精確傳輸。"
+  },
+  "busyTitle": {
+    "message": "正在送出中"
+  },
+  "busyBody": {
+    "message": "請等目前的內容送完，或按任意鍵中止後再試。"
+  },
+  "progressDirect": {
+    "message": "送出中"
+  },
+  "progressPrecise": {
+    "message": "精確傳輸中"
+  },
+  "progressHint": {
+    "message": "按任意鍵或點一下畫面即可中止"
+  },
+  "close": {
+    "message": "關閉"
+  },
+  "missedPasteTitle": {
+    "message": "沒有收到剪貼簿內容"
+  },
+  "missedPasteBody": {
+    "message": "請先點一下遠端桌面畫面，再按一次快捷鍵。"
+  },
+  "adapterNoInput": {
+    "message": "找不到遠端桌面的輸入區，Citrix 連線可能已中斷"
+  },
+  "adapterInsertRefused": {
+    "message": "瀏覽器拒絕插入文字，請點一下遠端桌面畫面後再試"
+  },
+  "popupSettings": {
+    "message": "設定"
+  },
+  "remainingLoaded": {
+    "message": "已載入上次中止時還沒送出的內容。"
+  },
+  "remainingClear": {
+    "message": "清除"
+  },
+  "modesLabel": {
+    "message": "送出方式"
+  },
+  "modeDirect": {
+    "message": "直接打字"
+  },
+  "modePrecise": {
+    "message": "精確傳輸"
+  },
+  "preciseNote": {
+    "message": "接收端必須是遠端的 bash 終端機，請先把遠端游標放在提示字元後面。內容會壓縮後以 base64 送出，完整保留每個位元組。"
+  },
+  "textPlaceholder": {
+    "message": "貼上要送出的文字"
+  },
+  "textLabel": {
+    "message": "要送出的內容"
+  },
+  "fileLabel": {
+    "message": "或改送檔案："
+  },
+  "fileChoose": {
+    "message": "選擇檔案"
+  },
+  "fileNone": {
+    "message": "未選擇檔案"
+  },
+  "fileRemove": {
+    "message": "移除檔案"
+  },
+  "sendTabLabel": {
+    "message": "這次送出 Tab 鍵（Makefile 等）"
+  },
+  "newlineKeyLabel": {
+    "message": "換行鍵"
+  },
+  "newlineShiftEnterChat": {
+    "message": "Shift+Enter（聊天程式）"
+  },
+  "detailPath": {
+    "message": "存到遠端"
+  },
+  "detailSize": {
+    "message": "原始大小"
+  },
+  "detailTyping": {
+    "message": "需要打字"
+  },
+  "detailSizeValue": {
+    "message": "{size}（壓縮後 {compressed}）"
+  },
+  "sendDirect": {
+    "message": "送出到遠端"
+  },
+  "sendPrecise": {
+    "message": "送出到遠端終端機"
+  },
+  "hotkeyHintBefore": {
+    "message": "在遠端桌面分頁按"
+  },
+  "hotkeyHintAfter": {
+    "message": "可直接送出剪貼簿。"
+  },
+  "rejectBusy": {
+    "message": "正在送出中，請等目前的內容送完。"
+  },
+  "rejectNotReady": {
+    "message": "找不到遠端桌面的輸入區，請確認 Citrix 仍在連線。"
+  },
+  "rejectUnknown": {
+    "message": "頁面沒有接受這次送出，請重新整理後再試。"
+  },
+  "statsEmptyDirect": {
+    "message": "尚未輸入內容"
+  },
+  "statsEmptyPrecise": {
+    "message": "尚未輸入內容或選擇檔案"
+  },
+  "statsFile": {
+    "message": "檔案：{name}（{size}）"
+  },
+  "statsText": {
+    "message": "文字：{size}"
+  },
+  "panelOverLimit": {
+    "message": "超過直接打字上限 {limit} 字，請改用精確傳輸。"
+  },
+  "panelSuggestPrecise": {
+    "message": "文字較長，建議改用精確傳輸（接收端需為遠端 bash 終端機）。"
+  },
+  "panelPreciseTooLarge": {
+    "message": "超過精確傳輸上限 {limit}。"
+  },
+  "panelPreciseFailed": {
+    "message": "無法準備精確傳輸：{error}"
+  },
+  "fileTooLarge": {
+    "message": "「{name}」有 {size}，超過上限 {limit}。"
+  },
+  "fileReadFailed": {
+    "message": "無法讀取檔案：{error}"
+  },
+  "sendFailed": {
+    "message": "送出失敗：{error}"
+  },
+  "pageNoResponse": {
+    "message": "頁面沒有回應"
+  },
+  "notEnabledTitle": {
+    "message": "尚未啟用"
+  },
+  "notEnabledBody": {
+    "message": "沒有取得這個網站的權限。需要時再按一次「在此網站啟用」。"
+  },
+  "enableOnSite": {
+    "message": "在此網站啟用"
+  },
+  "enableFailedTitle": {
+    "message": "啟用失敗"
+  },
+  "checkAgain": {
+    "message": "重新檢查"
+  },
+  "unsupportedTabTitle": {
+    "message": "這個分頁不能使用"
+  },
+  "unsupportedTabBody": {
+    "message": "請切到瀏覽器版遠端桌面（例如 Citrix）的分頁，再開啟 TypeShuttle。"
+  },
+  "enablePromptTitle": {
+    "message": "在這個網站啟用 TypeShuttle？"
+  },
+  "enablePromptBody": {
+    "message": "TypeShuttle 只會取得 {host} 的存取權限，用來把文字送進遠端桌面。啟用後不需要重新整理頁面。"
+  },
+  "tabUnreachableTitle": {
+    "message": "無法連到這個分頁"
+  },
+  "tabUnreachableBody": {
+    "message": "請重新整理遠端桌面頁面後再試。詳細資訊：{error}"
+  },
+  "remoteMissingTitle": {
+    "message": "找不到遠端桌面"
+  },
+  "remoteMissingBody": {
+    "message": "請先連上 Citrix 遠端桌面，等畫面出現後再開啟這個面板。"
+  },
+  "busyStateBody": {
+    "message": "請等目前的內容送完，或在遠端桌面分頁按任意鍵中止。"
+  },
+  "errorTitle": {
+    "message": "發生錯誤"
+  },
+  "optionsTitle": {
+    "message": "TypeShuttle 設定"
+  },
+  "optionsHeading": {
+    "message": "設定"
+  },
+  "languageHeading": {
+    "message": "語言"
+  },
+  "languageLabel": {
+    "message": "介面語言"
+  },
+  "languageAuto": {
+    "message": "跟隨瀏覽器"
+  },
+  "speedHeading": {
+    "message": "送出速度"
+  },
+  "speedIntro": {
+    "message": "遠端出現漏字時，改用較慢的檔位。精確傳輸最快只用「標準」，避免檔案損壞。"
+  },
+  "speedFast": {
+    "message": "快"
+  },
+  "speedFastHint": {
+    "message": "只適合短文字，或遠端是瀏覽器、編輯器時；在 PuTTY 等終端機送長文字可能漏字"
+  },
+  "speedNormal": {
+    "message": "標準"
+  },
+  "speedNormalHint": {
+    "message": "建議；已在 Citrix 實測長文字不漏字"
+  },
+  "speedSafe": {
+    "message": "保守"
+  },
+  "speedSafeHint": {
+    "message": "遠端反應慢、或「標準」仍會漏字時"
+  },
+  "textHeading": {
+    "message": "文字處理（直接打字）"
+  },
+  "tabWidthLabel": {
+    "message": "Tab 轉成幾個空格"
+  },
+  "newlineDefaultLabel": {
+    "message": "預設換行鍵"
+  },
+  "newlineShiftEnterRemoteChat": {
+    "message": "Shift+Enter（遠端聊天程式）"
+  },
+  "keepTrailingLabel": {
+    "message": "保留結尾換行"
+  },
+  "keepTrailingHint": {
+    "message": "（關閉時，最後一行送完不會按 Enter，避免終端機直接執行）"
+  },
+  "imeCommitLabel": {
+    "message": "含中文等非英數字的行，行尾多按一次 Enter"
+  },
+  "imeCommitHint": {
+    "message": "（只在遠端啟用中文輸入法、PuTTY 等終端機吃掉中文行尾的換行時才考慮開啟。換行不是每次都被吃掉，開啟後仍可能多出空行；其他程式一定會多出空行。重要內容請改用精確傳輸）"
+  },
+  "limitsHeading": {
+    "message": "確認與上限"
+  },
+  "confirmThresholdLabel": {
+    "message": "超過幾個字要先確認"
+  },
+  "confirmThresholdHelp": {
+    "message": "多行內容一律先確認。"
+  },
+  "suggestPreciseLabel": {
+    "message": "超過幾個字建議改用精確傳輸"
+  },
+  "maxDirectLabel": {
+    "message": "直接打字上限（字）"
+  },
+  "maxPreciseLabel": {
+    "message": "精確傳輸上限（KB）"
+  },
+  "preciseHeading": {
+    "message": "精確傳輸"
+  },
+  "preciseDirLabel": {
+    "message": "遠端存檔目錄"
+  },
+  "preciseDirHelp": {
+    "message": "只能使用英數字與 . _ - /，資料夾名稱不能以 - 開頭；可用 ~/ 開頭，例如 ~/typeshuttle-inbox。"
+  },
+  "sitesHeading": {
+    "message": "已啟用的網站"
+  },
+  "sitesIntro": {
+    "message": "TypeShuttle 只在這些網站上運作。移除後會一併收回權限。"
+  },
+  "sitesEmpty": {
+    "message": "還沒有啟用任何網站。在遠端桌面分頁點工具列的 TypeShuttle 圖示即可啟用。"
+  },
+  "siteRemove": {
+    "message": "移除"
+  },
+  "hotkeyHeading": {
+    "message": "快捷鍵"
+  },
+  "hotkeyBodyBefore": {
+    "message": "在遠端桌面分頁按"
+  },
+  "hotkeyBodyMac": {
+    "message": "（Mac："
+  },
+  "hotkeyBodyAfter": {
+    "message": "），會把剪貼簿的文字打進遠端。"
+  },
+  "hotkeyAbort": {
+    "message": "送出中按任意鍵或點一下畫面即可中止。"
+  },
+  "statusSaved": {
+    "message": "已儲存"
+  },
+  "statusInvalid": {
+    "message": "有欄位的值不正確，已標示為紅框，這些欄位沒有儲存。"
+  },
+  "statusRemoved": {
+    "message": "已移除 {pattern}"
+  },
+  "statusRemoveFailed": {
+    "message": "移除失敗：{error}"
+  },
+  "statusSaveFailed": {
+    "message": "儲存失敗：{error}"
+  },
+  "statusLoadFailed": {
+    "message": "載入設定失敗：{error}"
+  },
+  "errorInvalidBase64": {
+    "message": "要傳送的資料已損壞，請重新開啟面板再試一次。"
+  },
+  "errorUnsafeDir": {
+    "message": "遠端存檔目錄「{dir}」不允許使用，只能用英數字與 . _ - /，且資料夾名稱不能以 - 開頭。"
+  },
+  "errorUnsafeFilename": {
+    "message": "檔名「{name}」不允許使用。"
+  },
+  "errorNotSitePattern": {
+    "message": "「{pattern}」不是單一網站，無法啟用。"
+  }
+}

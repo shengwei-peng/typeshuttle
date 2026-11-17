@@ -1,5 +1,5 @@
-// Site enablement (docs/ARCHITECTURE.md#permissions): register the content script only for hosts the user granted.
 import { SCRIPT_ID_PREFIX, isSitePattern, scriptIdForPattern } from '../core/sites.js';
+import { localizedError } from '../core/i18n.js';
 
 const CONTENT_SCRIPT_FILE = 'content.js';
 
@@ -9,7 +9,7 @@ export async function listRegisteredSites() {
 }
 
 export async function registerSite(pattern) {
-  if (!isSitePattern(pattern)) throw new Error(`Refusing to register non-site pattern: ${pattern}`);
+  if (!isSitePattern(pattern)) throw localizedError('errorNotSitePattern', { pattern }, `Refusing to register non-site pattern: ${pattern}`);
   const id = scriptIdForPattern(pattern);
   const existing = await chrome.scripting.getRegisteredContentScripts({ ids: [id] });
   if (existing.length > 0) return;
@@ -38,7 +38,6 @@ export async function disableSite(pattern) {
   await chrome.permissions.remove({ origins: [pattern] });
 }
 
-// Bring registrations back in line with granted hosts after the user revokes access in chrome://extensions or the extension updates.
 export async function reconcileSites() {
   const granted = ((await chrome.permissions.getAll()).origins ?? []).filter(isSitePattern);
   const registered = await listRegisteredSites();

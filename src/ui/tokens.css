@@ -40,7 +40,6 @@
 
 * { box-sizing: border-box; }
 
-/* The hidden attribute loses to display: flex / grid on components, so force it. */
 [hidden] { display: none !important; }
 
 body {
@@ -89,5 +88,6 @@ code { font: 12px/1.5 var(--mono); background: var(--code-bg); padding: 1px 5px;
 .muted { color: var(--muted); }
 
 .notice { margin: 0; padding: 6px 10px; border-radius: var(--radius); font-size: 12px; }
+.notice.info { background: var(--accent-soft); color: var(--ink); }
 .notice.warn { background: var(--warn-soft); color: var(--warn); }
 .notice.error { background: var(--error-soft); color: var(--error); }

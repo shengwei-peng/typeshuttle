@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { splitGraphemes, chunkLine, buildTypingPlan, planToText } from '../../src/core/segment.js';
+import { splitGraphemes, chunkLine, buildTypingPlan, planToText, hasNonAscii, isLineBreakStep, withLeadingImeCommit } from '../../src/core/segment.js';
 
 const family = ['👨', '👩', '👧'].join(String.fromCodePoint(0x200d));
 const eAcute = `e${String.fromCodePoint(0x301)}`;
@@ -70,4 +70,52 @@ test('planToText reconstructs the text a plan types', () => {
   for (const sendTabKey of [true, false]) {
     assert.equal(planToText(buildTypingPlan(text, { chunkSize: 2, sendTabKey })), text);
   }
+});
+
+test('imeCommitEnter adds one commit Enter only after lines that contain non-ASCII characters', () => {
+  const plan = buildTypingPlan('\u4e2d\nab\ncaf\u00e9\nx', { chunkSize: 10, sendTabKey: false, imeCommitEnter: true });
+  assert.deepEqual(plan, [
+    { type: 'text', value: '\u4e2d' },
+    { type: 'imeCommit' },
+    { type: 'newline' },
+    { type: 'text', value: 'ab' },
+    { type: 'newline' },
+    { type: 'text', value: 'caf\u00e9' },
+    { type: 'imeCommit' },
+    { type: 'newline' },
+    { type: 'text', value: 'x' },
+  ]);
+  assert.equal(planToText(plan), '\u4e2d\nab\ncaf\u00e9\nx');
+});
+
+test('without imeCommitEnter, lines with non-ASCII characters get a single newline', () => {
+  assert.deepEqual(buildTypingPlan('\u4e2d\nx', { chunkSize: 10, sendTabKey: false }), [
+    { type: 'text', value: '\u4e2d' },
+    { type: 'newline' },
+    { type: 'text', value: 'x' },
+  ]);
+});
+
+test('hasNonAscii and isLineBreakStep', () => {
+  assert.equal(hasNonAscii('plain ascii ~'), false);
+  assert.equal(hasNonAscii('caf\u00e9'), true);
+  assert.equal(hasNonAscii('\u00a0'), true);
+  assert.equal(isLineBreakStep({ type: 'newline' }), true);
+  assert.equal(isLineBreakStep({ type: 'imeCommit' }), true);
+  assert.equal(isLineBreakStep({ type: 'text', value: 'a' }), false);
+});
+
+test('withLeadingImeCommit adds a commit only before a leading newline', () => {
+  assert.deepEqual(withLeadingImeCommit([{ type: 'newline' }, { type: 'text', value: 'b' }]), [{ type: 'imeCommit' }, { type: 'newline' }, { type: 'text', value: 'b' }]);
+  const plain = [{ type: 'text', value: 'b' }];
+  assert.equal(withLeadingImeCommit(plain), plain);
+  assert.deepEqual(withLeadingImeCommit([]), []);
+});
+
+test('the last line gets no IME commit because no newline follows it', () => {
+  assert.deepEqual(buildTypingPlan('a\n中', { chunkSize: 10, sendTabKey: false, imeCommitEnter: true }), [
+    { type: 'text', value: 'a' },
+    { type: 'newline' },
+    { type: 'text', value: '中' },
+  ]);
 });

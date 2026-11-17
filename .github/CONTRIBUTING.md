@@ -46,7 +46,9 @@ In short: pure logic lives in `src/core/` and is unit tested; browser-facing cod
 - **Test first.** Write a failing test, make it pass, then refactor. New logic in `src/core/` needs unit tests; user-visible behavior needs an e2e test.
 - **Keep changes small.** One concern per pull request. Small files and short functions are preferred.
 - **No debug output.** Remove `console.log` and similar before opening a pull request.
-- **Match the surrounding code.** Follow the existing naming, comment style and immutable data patterns.
+- **Match the surrounding code.** Follow the existing naming and immutable data patterns.
+- **No comments in code.** Explain behavior in `docs/` (for example [ARCHITECTURE.md](../docs/ARCHITECTURE.md) and [clients.md](../docs/clients.md)) and pin it down with tests.
+- **Interface text in both languages.** Put every user-visible string in `src/_locales/en/messages.json` and `src/_locales/zh_TW/messages.json` and use it through the translator. A unit test fails if the two files have different keys or placeholders.
 
 ## Commit messages
 

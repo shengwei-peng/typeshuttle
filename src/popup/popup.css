@@ -41,7 +41,8 @@ textarea {
 }
 
 .file-row { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; font-size: 12px; }
-.file-row input { max-width: 100%; }
+.file-row button:not(.link) { padding: 3px 10px; }
+.file-name { min-width: 0; overflow-wrap: anywhere; color: var(--muted); }
 
 .stats { margin: 0; font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
 

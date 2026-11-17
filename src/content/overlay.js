@@ -1,5 +1,3 @@
-// Confirmation dialog, progress and toasts shown on top of the remote desktop page (docs/ARCHITECTURE.md#safety).
-// A closed shadow root isolates it from the page styles; pointer and key events never reach the client, so clicks are not sent to the remote session.
 import { OVERLAY_CSS } from './overlay-style.js';
 import { swallowNextKeyUp } from './keys.js';
 
@@ -8,9 +6,7 @@ const ISOLATED_POINTER_EVENTS = [
   'pointerdown', 'pointerup', 'pointermove', 'mousemove', 'touchstart', 'touchend',
 ];
 const TOAST_DURATION_MS = { ok: 6000, warn: 12000, error: 12000 };
-// Keep only the latest few toasts so repeated actions do not cover the remote screen.
 const MAX_TOASTS = 3;
-// Production uses a closed shadow root so page scripts cannot read the clipboard preview; test builds use open so Playwright can inspect it.
 const SHADOW_MODE = __TYPESHUTTLE_TEST__ ? 'open' : 'closed';
 
 function h(doc, tag, props = {}, children = []) {
@@ -24,7 +20,7 @@ function h(doc, tag, props = {}, children = []) {
   return element;
 }
 
-export function createOverlay({ doc, win }) {
+export function createOverlay({ doc, win, getT }) {
   let root = null;
 
   const ensureRoot = () => {
@@ -49,7 +45,6 @@ export function createOverlay({ doc, win }) {
         if (!event.isTrusted) return;
         event.preventDefault();
         event.stopImmediatePropagation();
-        // Match on physical key codes so the keymap still works while a local IME is active.
         const actionId = keymap[event.code];
         const action = actions.find((candidate) => candidate.id === actionId);
         if (!action || action.disabled || event.repeat) return;
@@ -84,7 +79,7 @@ export function createOverlay({ doc, win }) {
     const panel = h(doc, 'section', { class: 'progress', role: 'status' }, [
       h(doc, 'div', { class: 'row' }, [h(doc, 'strong', { text: title }), label]),
       h(doc, 'span', { class: 'bar' }, [fill]),
-      h(doc, 'p', { class: 'hint', text: '按任意鍵或點一下畫面即可中止' }),
+      h(doc, 'p', { class: 'hint', text: getT()('progressHint') }),
     ]);
     shadow.append(panel);
     return {
@@ -102,7 +97,7 @@ export function createOverlay({ doc, win }) {
     const item = h(doc, 'section', { class: `toast ${tone}`, role: tone === 'ok' ? 'status' : 'alert' }, [
       h(doc, 'div', { class: 'row' }, [
         h(doc, 'strong', { text: title }),
-        h(doc, 'button', { type: 'button', class: 'close', 'aria-label': '關閉', text: '×', on: { click: () => item.remove() } }),
+        h(doc, 'button', { type: 'button', class: 'close', 'aria-label': getT()('close'), text: '×', on: { click: () => item.remove() } }),
       ]),
       body && h(doc, 'p', { text: body }),
       code && h(doc, 'code', { text: code }),

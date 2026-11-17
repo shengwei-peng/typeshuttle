@@ -28,7 +28,7 @@ If direct typing is interrupted (for example, you press a key or switch tabs), t
 
 ### Settings
 
-Your options (speed, newline key, confirmation thresholds, size limits and the remote folder for precise transfer) are stored in `chrome.storage.sync`. If browser sync is turned on, your browser may sync these settings to your other signed-in devices. Settings never contain the text or files you send.
+Your options (interface language, speed, newline key, confirmation thresholds, size limits and the remote folder for precise transfer) are stored in `chrome.storage.sync`. If browser sync is turned on, your browser may sync these settings to your other signed-in devices. Settings never contain the text or files you send.
 
 ### Site access
 

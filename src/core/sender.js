@@ -1,5 +1,4 @@
-// Runs a typing plan step by step through an adapter: pacing, aborting and computing the unsent remainder.
-import { planToText } from './segment.js';
+import { isLineBreakStep, planToText } from './segment.js';
 
 function abortableSleep(ms, signal) {
   return new Promise((resolve) => {
@@ -17,6 +16,7 @@ function abortableSleep(ms, signal) {
 const STEP_ACTIONS = {
   text: (adapter, step) => adapter.insertText(step.value),
   newline: (adapter, _step, newlineKey) => adapter.pressNewline({ shift: newlineKey === 'shift-enter' }),
+  imeCommit: (adapter, _step, newlineKey) => adapter.pressNewline({ shift: newlineKey === 'shift-enter' }),
   tab: (adapter) => adapter.pressTab(),
 };
 
@@ -28,6 +28,7 @@ function summarize(plan, completedSteps, status, extra = {}) {
     totalSteps: plan.length,
     lineNumber: newlinesDone + 1,
     remainingText: planToText(plan.slice(completedSteps)),
+    pendingImeCommit: plan[completedSteps]?.type === 'imeCommit',
     ...extra,
   };
 }
@@ -42,7 +43,7 @@ export async function runPlan({ plan, adapter, pacing, newlineKey, signal, onPro
       return summarize(plan, index, 'error', { error: error.message });
     }
     onProgress({ done: index + 1, total: plan.length });
-    await wait(step.type === 'newline' ? pacing.lineDelayMs : pacing.chunkDelayMs);
+    await wait(isLineBreakStep(step) ? pacing.lineDelayMs : pacing.chunkDelayMs);
   }
   return summarize(plan, plan.length, signal.aborted && plan.length === 0 ? 'aborted' : 'done');
 }

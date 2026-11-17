@@ -1,4 +1,3 @@
-// Overlay styles. They live inside the shadow root, so page CSS cannot affect them and they cannot affect the page.
 export const OVERLAY_CSS = `
 :host { all: initial; }
 * { box-sizing: border-box; }
@@ -55,7 +54,7 @@ p { margin: 0; }
 .meta { color: var(--muted); font-variant-numeric: tabular-nums; }
 .preview {
   margin: 0;
-  max-height: 180px;
+  max-height: calc(9lh + 20px);
   overflow: auto;
   padding: 10px 12px;
   background: var(--code-bg);

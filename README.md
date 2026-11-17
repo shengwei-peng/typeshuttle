@@ -29,17 +29,19 @@ TypeShuttle inserts text through the client's own text input path instead, then 
 
 | | TypeShuttle | OS keystroke tools<br><sub>xdotool, AutoHotkey, AutoKey</sub> | Generic "paste as keystrokes" extensions |
 |---|---|---|---|
-| CJK, emoji and symbols arrive intact, whatever the remote input method or layout | ✅ | ❌ | Depends on the site |
+| CJK, emoji and symbols arrive intact, whatever the remote input method's mode or the keyboard layout | ✅<sup>1</sup> | ❌ | Depends on the site |
 | Handles each client's input quirks (swallowed input, stripped newlines) | ✅ | ❌ | Rarely |
 | Byte-exact file transfer with a sha256 check | ✅ | ❌ | ❌ |
 | Stops as soon as you press a key or click | ✅ | ❌ | Some |
 | Reads the clipboard only when you press the hotkey, on sites you enable | ✅ | — | Some |
 | Nothing to install outside the browser | ✅ | ❌ | ✅ |
 
+<sup>1</sup> On Windows sessions some remote programs reorder CJK text after full-width punctuation or drop the Enter after it. Precise transfer is not affected. See [known issues](docs/clients.md#known-issues-and-limitations).
+
 ## Features
 
 - **One hotkey.** On a remote desktop tab you have enabled, <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>V</kbd> (<kbd>Cmd</kbd>+<kbd>Shift</kbd>+<kbd>V</kbd> on macOS) types your clipboard into the remote session.
-- **Text, not key codes.** Chinese, Japanese, emoji and symbols arrive exactly as copied, whether the remote input method is on or off.
+- **Text, not key codes.** Chinese, Japanese, emoji and symbols are sent as text, so the remote input method's mode cannot turn them into other characters. On Windows sessions, check CJK text after sending (see note 1 above).
 - **Precise transfer.** For code, config files or anything up to 1 MB, TypeShuttle types a short bash command that rebuilds the exact bytes in a remote file and prints its sha256, so you can compare it with the value shown locally.
 - **Safe by default.**
   - Typing waits until you release every key, and stops the moment you press a key or click.
@@ -61,7 +63,7 @@ Store listings are not available yet. Install from a release:
 To build from source instead, run `npm ci && npm run build` and load `dist/extension`.
 
 > [!NOTE]
-> The extension's interface is currently in Traditional Chinese only. The [user guide](docs/user-guide.md) gives an English gloss for every label.
+> The interface is available in English and Traditional Chinese. It follows the browser's language and can be changed in the settings.
 
 ## Quick start
 

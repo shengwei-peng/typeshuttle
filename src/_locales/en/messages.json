@@ -1,0 +1,491 @@
+{
+  "extName": {
+    "message": "TypeShuttle"
+  },
+  "extDescription": {
+    "message": "Types clipboard text and files into browser-based remote desktops that block the clipboard. Works with Citrix Workspace for HTML5."
+  },
+  "actionTitle": {
+    "message": "TypeShuttle"
+  },
+  "durationUnderSecond": {
+    "message": "under 1 s"
+  },
+  "durationSeconds": {
+    "message": "{seconds} s"
+  },
+  "durationMinutes": {
+    "message": "{minutes} min"
+  },
+  "durationMinutesSeconds": {
+    "message": "{minutes} min {seconds} s"
+  },
+  "lineCount": {
+    "message": "{count} lines"
+  },
+  "lineCount_one": {
+    "message": "{count} line"
+  },
+  "charCount": {
+    "message": "{count} characters"
+  },
+  "charCount_one": {
+    "message": "{count} character"
+  },
+  "aboutDuration": {
+    "message": "about {duration}"
+  },
+  "sendFailedTitle": {
+    "message": "Send failed"
+  },
+  "confirmTitle": {
+    "message": "Send to the remote desktop?"
+  },
+  "confirmExceedsLimit": {
+    "message": "This is over the direct typing limit of {limit} characters. Use precise transfer instead (the receiving end must be a bash terminal on the remote desktop)."
+  },
+  "confirmSuggestPrecise": {
+    "message": "This text is long. Precise transfer keeps it exact and lets you check it with sha256 (the receiving end must be a bash terminal on the remote desktop)."
+  },
+  "confirmTerminalLines": {
+    "message": "If the remote cursor is in a terminal, each line runs as soon as it is typed."
+  },
+  "nonAsciiNotice": {
+    "message": "This text contains Chinese or other non-ASCII characters. On Windows remote desktops some programs reorder them, and while a Chinese input method is active on the remote side, PuTTY and similar terminals often drop the line break after them. Check the result, and use precise transfer for text that must be exact in a terminal."
+  },
+  "actionCancel": {
+    "message": "Cancel"
+  },
+  "actionPrecise": {
+    "message": "Use precise transfer"
+  },
+  "actionSend": {
+    "message": "Send"
+  },
+  "previewMoreLines": {
+    "message": "… {count} more lines"
+  },
+  "previewMoreLines_one": {
+    "message": "… {count} more line"
+  },
+  "causeStopped": {
+    "message": "Stopped"
+  },
+  "interruptKeyboard": {
+    "message": "A key was pressed"
+  },
+  "interruptMouse": {
+    "message": "The mouse was clicked"
+  },
+  "interruptHidden": {
+    "message": "The tab was switched"
+  },
+  "interruptBlur": {
+    "message": "The window lost focus"
+  },
+  "preciseStoppedTitle": {
+    "message": "Precise transfer stopped"
+  },
+  "preciseStoppedBody": {
+    "message": "{cause}. The remote terminal is still waiting for data. Press Ctrl+C on the remote side, then send again."
+  },
+  "stoppedTitle": {
+    "message": "Stopped at line {line}"
+  },
+  "stoppedBodyStored": {
+    "message": "{cause}. The rest is in the toolbar panel. Move the cursor back to the right place, then send it from the panel."
+  },
+  "stoppedBodyNotStored": {
+    "message": "{cause}. The rest could not be kept in the panel. Copy the text again and send it."
+  },
+  "preciseDoneTitle": {
+    "message": "Saved to {path}"
+  },
+  "preciseDoneBody": {
+    "message": "The remote terminal prints the sha256 at the end. Compare it with this value:"
+  },
+  "doneTitle": {
+    "message": "Sent"
+  },
+  "inputNotFoundTitle": {
+    "message": "Remote desktop input not found"
+  },
+  "inputNotFoundBody": {
+    "message": "Check that Citrix is connected, then click the remote screen."
+  },
+  "notStartedTitle": {
+    "message": "Nothing was sent"
+  },
+  "notStartedFocusKept": {
+    "message": "Click back on the remote desktop tab, then send again from the toolbar panel. The text is still in the panel."
+  },
+  "notStartedFocus": {
+    "message": "Click back on the remote desktop tab, then send again from the toolbar panel."
+  },
+  "notStartedKeysHeld": {
+    "message": "A key is still held down. Release all keys and try again."
+  },
+  "notStartedKeysHeldKept": {
+    "message": "A key is still held down. Release all keys, then send again from the toolbar panel. The text is still in the panel."
+  },
+  "notStartedFocusHotkey": {
+    "message": "The remote desktop tab lost focus. Click the remote screen and press the hotkey again."
+  },
+  "inputNotFoundKept": {
+    "message": "Check that Citrix is connected, click the remote screen, then send again from the toolbar panel. The text is still in the panel."
+  },
+  "preciseTooLarge": {
+    "message": "The content is {size}, over the precise transfer limit of {limit}"
+  },
+  "emptyTitle": {
+    "message": "Nothing to send"
+  },
+  "emptyBody": {
+    "message": "The clipboard is empty, or it holds only non-text content such as an image."
+  },
+  "overLimitTitle": {
+    "message": "Over the direct typing limit"
+  },
+  "overLimitBody": {
+    "message": "The limit is {limit} characters. Use precise transfer instead."
+  },
+  "busyTitle": {
+    "message": "Already sending"
+  },
+  "busyBody": {
+    "message": "Wait until the current text is sent, or press any key to stop it, then try again."
+  },
+  "progressDirect": {
+    "message": "Sending"
+  },
+  "progressPrecise": {
+    "message": "Precise transfer"
+  },
+  "progressHint": {
+    "message": "Press any key or click the screen to stop"
+  },
+  "close": {
+    "message": "Close"
+  },
+  "missedPasteTitle": {
+    "message": "No clipboard content received"
+  },
+  "missedPasteBody": {
+    "message": "Click the remote screen first, then press the hotkey again."
+  },
+  "adapterNoInput": {
+    "message": "The remote desktop's input area was not found. The Citrix connection may have dropped"
+  },
+  "adapterInsertRefused": {
+    "message": "The browser refused to insert the text. Click the remote screen and try again"
+  },
+  "popupSettings": {
+    "message": "Settings"
+  },
+  "remainingLoaded": {
+    "message": "Loaded the text that was left unsent when the last send stopped."
+  },
+  "remainingClear": {
+    "message": "Clear"
+  },
+  "modesLabel": {
+    "message": "Send mode"
+  },
+  "modeDirect": {
+    "message": "Direct typing"
+  },
+  "modePrecise": {
+    "message": "Precise transfer"
+  },
+  "preciseNote": {
+    "message": "The receiving end must be a bash terminal on the remote desktop. Put the remote cursor after the prompt first. The content is compressed and sent as base64, so every byte is kept."
+  },
+  "textPlaceholder": {
+    "message": "Paste the text to send"
+  },
+  "textLabel": {
+    "message": "Content to send"
+  },
+  "fileLabel": {
+    "message": "Or send a file:"
+  },
+  "fileChoose": {
+    "message": "Choose a file"
+  },
+  "fileNone": {
+    "message": "No file chosen"
+  },
+  "fileRemove": {
+    "message": "Remove file"
+  },
+  "sendTabLabel": {
+    "message": "Send the Tab key this time (Makefiles and similar)"
+  },
+  "newlineKeyLabel": {
+    "message": "Newline key"
+  },
+  "newlineShiftEnterChat": {
+    "message": "Shift+Enter (chat apps)"
+  },
+  "detailPath": {
+    "message": "Saved to"
+  },
+  "detailSize": {
+    "message": "Original size"
+  },
+  "detailTyping": {
+    "message": "To type"
+  },
+  "detailSizeValue": {
+    "message": "{size} ({compressed} compressed)"
+  },
+  "sendDirect": {
+    "message": "Send to remote"
+  },
+  "sendPrecise": {
+    "message": "Send to remote terminal"
+  },
+  "hotkeyHintBefore": {
+    "message": "On the remote desktop tab, press"
+  },
+  "hotkeyHintAfter": {
+    "message": "to send the clipboard directly."
+  },
+  "rejectBusy": {
+    "message": "Already sending. Wait until the current text is sent."
+  },
+  "rejectNotReady": {
+    "message": "The remote desktop's input area was not found. Check that Citrix is still connected."
+  },
+  "rejectUnknown": {
+    "message": "The page did not accept this send. Reload it and try again."
+  },
+  "statsEmptyDirect": {
+    "message": "Nothing entered yet"
+  },
+  "statsEmptyPrecise": {
+    "message": "Nothing entered and no file chosen"
+  },
+  "statsFile": {
+    "message": "File: {name} ({size})"
+  },
+  "statsText": {
+    "message": "Text: {size}"
+  },
+  "panelOverLimit": {
+    "message": "Over the direct typing limit of {limit} characters. Use precise transfer instead."
+  },
+  "panelSuggestPrecise": {
+    "message": "This text is long; precise transfer is recommended (the receiving end must be a bash terminal on the remote desktop)."
+  },
+  "panelPreciseTooLarge": {
+    "message": "Over the precise transfer limit of {limit}."
+  },
+  "panelPreciseFailed": {
+    "message": "Could not prepare precise transfer: {error}"
+  },
+  "fileTooLarge": {
+    "message": "“{name}” is {size}, over the limit of {limit}."
+  },
+  "fileReadFailed": {
+    "message": "Could not read the file: {error}"
+  },
+  "sendFailed": {
+    "message": "Send failed: {error}"
+  },
+  "pageNoResponse": {
+    "message": "The page did not respond"
+  },
+  "notEnabledTitle": {
+    "message": "Not enabled"
+  },
+  "notEnabledBody": {
+    "message": "Access to this site was not granted. Click “Enable on this site” again when you need it."
+  },
+  "enableOnSite": {
+    "message": "Enable on this site"
+  },
+  "enableFailedTitle": {
+    "message": "Could not enable"
+  },
+  "checkAgain": {
+    "message": "Check again"
+  },
+  "unsupportedTabTitle": {
+    "message": "This tab cannot be used"
+  },
+  "unsupportedTabBody": {
+    "message": "Switch to the tab of a browser-based remote desktop (such as Citrix), then open TypeShuttle again."
+  },
+  "enablePromptTitle": {
+    "message": "Enable TypeShuttle on this site?"
+  },
+  "enablePromptBody": {
+    "message": "TypeShuttle only gets access to {host}, to type text into the remote desktop. The page does not need to be reloaded afterwards."
+  },
+  "tabUnreachableTitle": {
+    "message": "Cannot reach this tab"
+  },
+  "tabUnreachableBody": {
+    "message": "Reload the remote desktop page and try again. Details: {error}"
+  },
+  "remoteMissingTitle": {
+    "message": "Remote desktop not found"
+  },
+  "remoteMissingBody": {
+    "message": "Connect to the Citrix remote desktop first, wait for the screen to appear, then open this panel again."
+  },
+  "busyStateBody": {
+    "message": "Wait until the current text is sent, or press any key on the remote desktop tab to stop it."
+  },
+  "errorTitle": {
+    "message": "Something went wrong"
+  },
+  "optionsTitle": {
+    "message": "TypeShuttle settings"
+  },
+  "optionsHeading": {
+    "message": "Settings"
+  },
+  "languageHeading": {
+    "message": "Language"
+  },
+  "languageLabel": {
+    "message": "Interface language"
+  },
+  "languageAuto": {
+    "message": "Same as the browser"
+  },
+  "speedHeading": {
+    "message": "Typing speed"
+  },
+  "speedIntro": {
+    "message": "If characters go missing on the remote side, choose a slower speed. Precise transfer never runs faster than Normal, to keep files intact."
+  },
+  "speedFast": {
+    "message": "Fast"
+  },
+  "speedFastHint": {
+    "message": "Only for short text, or when the remote side is a browser or editor; terminals such as PuTTY can drop keys with long text"
+  },
+  "speedNormal": {
+    "message": "Normal"
+  },
+  "speedNormalHint": {
+    "message": "Recommended; tested on Citrix with long text and no dropped keys"
+  },
+  "speedSafe": {
+    "message": "Safe"
+  },
+  "speedSafeHint": {
+    "message": "When the remote side is slow, or Normal still drops keys"
+  },
+  "textHeading": {
+    "message": "Text handling (direct typing)"
+  },
+  "tabWidthLabel": {
+    "message": "Spaces per Tab"
+  },
+  "newlineDefaultLabel": {
+    "message": "Default newline key"
+  },
+  "newlineShiftEnterRemoteChat": {
+    "message": "Shift+Enter (remote chat apps)"
+  },
+  "keepTrailingLabel": {
+    "message": "Keep trailing newline"
+  },
+  "keepTrailingHint": {
+    "message": "(when off, no Enter is pressed after the last line, so a terminal does not run it right away)"
+  },
+  "imeCommitLabel": {
+    "message": "Extra Enter after lines with non-ASCII characters"
+  },
+  "imeCommitHint": {
+    "message": "(consider only when a Chinese input method is active on a Windows remote desktop and PuTTY or a similar terminal drops line breaks after Chinese text. The line break is not dropped every time, so blank lines can still appear, and other programs always get them. Use precise transfer for text that must be exact)"
+  },
+  "limitsHeading": {
+    "message": "Confirmation and limits"
+  },
+  "confirmThresholdLabel": {
+    "message": "Ask before sending more than this many characters"
+  },
+  "confirmThresholdHelp": {
+    "message": "Multi-line text always asks first."
+  },
+  "suggestPreciseLabel": {
+    "message": "Suggest precise transfer above this many characters"
+  },
+  "maxDirectLabel": {
+    "message": "Direct typing limit (characters)"
+  },
+  "maxPreciseLabel": {
+    "message": "Precise transfer limit (KB)"
+  },
+  "preciseHeading": {
+    "message": "Precise transfer"
+  },
+  "preciseDirLabel": {
+    "message": "Remote folder"
+  },
+  "preciseDirHelp": {
+    "message": "Letters, digits and . _ - / only, and no folder name may start with -. May start with ~/, for example ~/typeshuttle-inbox."
+  },
+  "sitesHeading": {
+    "message": "Enabled sites"
+  },
+  "sitesIntro": {
+    "message": "TypeShuttle works only on these sites. Removing a site also revokes its access."
+  },
+  "sitesEmpty": {
+    "message": "No sites enabled yet. Click the TypeShuttle toolbar icon on a remote desktop tab to enable it."
+  },
+  "siteRemove": {
+    "message": "Remove"
+  },
+  "hotkeyHeading": {
+    "message": "Hotkey"
+  },
+  "hotkeyBodyBefore": {
+    "message": "On a remote desktop tab, press"
+  },
+  "hotkeyBodyMac": {
+    "message": "(Mac:"
+  },
+  "hotkeyBodyAfter": {
+    "message": ") to type the clipboard text into the remote session."
+  },
+  "hotkeyAbort": {
+    "message": "While sending, press any key or click the screen to stop."
+  },
+  "statusSaved": {
+    "message": "Saved"
+  },
+  "statusInvalid": {
+    "message": "Some values are invalid. They are outlined in red and were not saved."
+  },
+  "statusRemoved": {
+    "message": "Removed {pattern}"
+  },
+  "statusRemoveFailed": {
+    "message": "Could not remove: {error}"
+  },
+  "statusSaveFailed": {
+    "message": "Could not save: {error}"
+  },
+  "statusLoadFailed": {
+    "message": "Could not load the settings: {error}"
+  },
+  "errorInvalidBase64": {
+    "message": "The data to transfer is damaged. Open the panel and try again."
+  },
+  "errorUnsafeDir": {
+    "message": "The remote folder “{dir}” is not allowed. Use letters, digits and . _ - / only, and do not start a folder name with -."
+  },
+  "errorUnsafeFilename": {
+    "message": "The file name “{name}” is not allowed."
+  },
+  "errorNotSitePattern": {
+    "message": "“{pattern}” is not a single site and cannot be enabled."
+  }
+}

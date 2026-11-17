@@ -1,5 +1,5 @@
-// Content script entry: injected only on enabled sites, and intercepts the hotkey only when the page has a supported input target.
 import { DEFAULT_SETTINGS, sanitizeSettings } from '../core/settings.js';
+import { createTranslator, resolveLocale } from '../core/i18n.js';
 import { isMacPlatform } from '../core/hotkey.js';
 import { createKeyTracker } from './keys.js';
 import { createCitrixAdapter } from './citrix-adapter.js';
@@ -12,7 +12,6 @@ const INSTANCE_KEY = '__typeshuttleInstance';
 function bootstrap() {
   const win = window;
   const doc = document;
-  // After the extension updates or reloads, the old content script stays on the page but runtime.id becomes undefined.
   const runtime = chrome.runtime;
   const isAlive = () => Boolean(runtime?.id);
   let disposers = [];
@@ -22,14 +21,20 @@ function bootstrap() {
     pending.forEach((fn) => fn());
   };
 
-  // Register first so it still sees keys that later capture listeners stop.
   const keys = createKeyTracker(win);
   disposers = [...disposers, keys.dispose];
   let settings = DEFAULT_SETTINGS;
+  const translatorFor = (current) => createTranslator(resolveLocale(current.uiLanguage, navigator.language));
+  let t = translatorFor(settings);
+  const getT = () => t;
+  const applySettings = (next) => {
+    settings = next;
+    t = translatorFor(next);
+  };
 
   const loadSettings = () => chrome.storage.sync.get(null)
-    .then((stored) => { settings = sanitizeSettings(stored); })
-    .catch(() => { settings = DEFAULT_SETTINGS; });
+    .then((stored) => applySettings(sanitizeSettings(stored)))
+    .catch(() => applySettings(DEFAULT_SETTINGS));
   const onStorageChanged = (_changes, area) => {
     if (area === 'sync') loadSettings();
   };
@@ -39,8 +44,8 @@ function bootstrap() {
     try { chrome.storage?.onChanged?.removeListener(onStorageChanged); } catch {}
   }];
 
-  const adapter = createCitrixAdapter(doc);
-  const overlay = createOverlay({ doc, win });
+  const adapter = createCitrixAdapter(doc, { getT });
+  const overlay = createOverlay({ doc, win, getT });
   const controller = createController({
     win,
     doc,
@@ -48,7 +53,8 @@ function bootstrap() {
     overlay,
     keys,
     getSettings: () => settings,
-    storeRemaining: (text) => runtime.sendMessage({ type: 'typeshuttle/store-remaining', text }),
+    getT,
+    storeRemaining: async (text, pendingImeCommit = false) => (await runtime.sendMessage({ type: 'typeshuttle/store-remaining', text, pendingImeCommit }))?.ok === true,
   });
 
   const disposeHotkey = installPasteHotkey({
@@ -56,16 +62,11 @@ function bootstrap() {
     isMac: isMacPlatform(navigator.userAgentData?.platform ?? navigator.platform),
     isActive: () => {
       if (isAlive()) return adapter.isAvailable();
-      // Orphaned instance: hand the hotkey over to the newly injected one.
       dispose();
       return false;
     },
     onText: (text) => controller.fromHotkey(text),
-    onMissedPaste: () => overlay.toast({
-      tone: 'warn',
-      title: '沒有收到剪貼簿內容',
-      body: '請先點一下遠端桌面畫面，再按一次快捷鍵。',
-    }),
+    onMissedPaste: () => overlay.toast({ tone: 'warn', title: t('missedPasteTitle'), body: t('missedPasteBody') }),
   });
   disposers = [...disposers, disposeHotkey];
 
@@ -76,6 +77,21 @@ function bootstrap() {
     return false;
   };
   runtime.onMessage.addListener(onMessage);
+
+  if (__TYPESHUTTLE_TEST__) {
+    const onTestMessage = (event) => {
+      if (event.source !== win || event.data?.source !== 'typeshuttle-test') return;
+      const { id, action, values, message } = event.data;
+      const reply = (result) => win.postMessage({ source: 'typeshuttle-test-reply', id, result }, '*');
+      if (action === 'settings') {
+        chrome.storage.sync.set(values).then(loadSettings).then(() => reply({ ok: true }), (error) => reply({ ok: false, error: error.message }));
+      } else if (action === 'send') {
+        reply(controller.handleMessage(message));
+      }
+    };
+    win.addEventListener('message', onTestMessage);
+    disposers = [...disposers, () => win.removeEventListener('message', onTestMessage)];
+  }
   disposers = [...disposers, () => {
     try { runtime?.onMessage?.removeListener(onMessage); } catch {}
   }];
