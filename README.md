@@ -5,7 +5,7 @@
 <h1 align="center">TypeShuttle</h1>
 
 <p align="center">
-  <strong>Paste into browser-based remote desktops that have clipboard sync turned off.</strong><br>
+  <strong>Paste into Citrix Workspace in the browser, even with clipboard sync turned off.</strong><br>
   A Chrome and Edge extension that types your text, or transfers a small file byte for byte, into the remote session.
 </p>
 
@@ -17,6 +17,11 @@
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-Apache--2.0-blue.svg" alt="License: Apache-2.0"></a>
   <a href="https://github.com/shengwei-peng/typeshuttle/releases"><img src="https://img.shields.io/github/v/release/shengwei-peng/typeshuttle?label=release" alt="Latest release"></a>
   <a href="https://github.com/shengwei-peng/typeshuttle/actions"><img src="https://img.shields.io/github/actions/workflow/status/shengwei-peng/typeshuttle/ci.yml?label=CI" alt="CI status"></a>
+</p>
+
+<p align="center">
+  <img src="assets/demo-en.gif" width="800" alt="TypeShuttle typing a shell script into a remote desktop terminal, then transferring a config file whose remote sha256 matches the local one">
+  <br><sub>Recorded in a simulated session. Regenerate with <code>npm run media</code>.</sub>
 </p>
 
 ---
@@ -37,6 +42,15 @@ TypeShuttle inserts text through the client's own text input path instead, then 
 | Nothing to install outside the browser | ✅ | ❌ | ✅ |
 
 <sup>1</sup> On Windows sessions some remote programs reorder CJK text after full-width punctuation or drop the Enter after it. Precise transfer is not affected. See [known issues](docs/clients.md#known-issues-and-limitations).
+
+## Supported clients
+
+| Client | Status |
+|---|---|
+| Citrix Workspace app for HTML5 (Citrix Workspace in a browser) | Should work: tested on live sessions, with [known issues](docs/clients.md#known-issues-and-limitations) on Windows |
+| Other browser-based clients (noVNC, Guacamole, RDP web clients, and others) | Not supported yet |
+
+Status definitions and per-client details are in [docs/clients.md](docs/clients.md).
 
 ## Features
 
@@ -67,7 +81,7 @@ To build from source instead, run `npm ci && npm run build` and load `dist/exten
 
 ## Quick start
 
-1. Open your remote desktop in the browser. Click the TypeShuttle toolbar icon, choose **在此網站啟用** (Enable on this site), and allow access when the browser asks. Do this once per site.
+1. Open your remote desktop in the browser. Click the TypeShuttle toolbar icon, choose **Enable on this site** (在此網站啟用 in the Chinese interface), and allow access when the browser asks. Do this once per site.
 2. Copy some text on your computer, click where it should go in the remote session, and press <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>V</kbd>.
 3. For multi-line or long text, a preview appears. Press <kbd>Enter</kbd> to send, <kbd>Esc</kbd> to cancel, or <kbd>P</kbd> to use precise transfer.
 4. Keep your hands off the keyboard and mouse until typing finishes.
@@ -92,16 +106,40 @@ See [PRIVACY.md](docs/PRIVACY.md) for details.
 
 ## FAQ
 
-**Does it read my clipboard in the background?**
+### How do I paste into Citrix Workspace when the clipboard is disabled?
+
+Install TypeShuttle, enable it on your Citrix Workspace site, click where the text should go and press <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>V</kbd>. TypeShuttle types the clipboard text through the client's own text input, so it works even when clipboard sync is turned off by policy. See [Quick start](#quick-start).
+
+### Why does pasted or auto-typed text turn into Bopomofo or other characters?
+
+Tools that send key codes let the remote input method and keyboard layout reinterpret every key. With Zhuyin active on the remote side, `Hi 12` can arrive as Bopomofo. TypeShuttle sends text instead of key codes, so the remote input mode does not change it.
+
+### How do I copy a file into a remote session without the clipboard?
+
+Use precise transfer: press <kbd>P</kbd> in the preview, or choose a file in the toolbar panel. TypeShuttle types a short bash command that rebuilds the exact bytes in `~/typeshuttle-inbox` and prints the file's sha256 for you to compare. The remote side needs a bash terminal, and files can be up to 1 MB by default.
+
+### Does it work with Proxmox, noVNC, Guacamole or other web consoles?
+
+Not yet. Only Citrix Workspace app for HTML5 has an adapter today. Each client needs its own adapter: [Adding a client](docs/clients.md#adding-a-client) explains how, and compatibility reports are welcome.
+
+### Does it work in Microsoft Edge?
+
+Yes. TypeShuttle is a Manifest V3 extension for Chrome and Edge, version 120 or later. Install it from a release as described in [Install](#install).
+
+### Does it read my clipboard in the background?
+
 No. The browser hands the clipboard text to TypeShuttle only when you press the hotkey on an enabled site.
 
-**Can I copy from the remote session back to my computer?**
+### Can I copy from the remote session back to my computer?
+
 No. TypeShuttle only sends from your computer to the remote session.
 
-**Why not use xdotool or AutoHotkey?**
+### Why not use xdotool or AutoHotkey?
+
 They send key codes, which the remote input method and keyboard layout can change. They also cannot handle client-specific issues such as text being swallowed after a key press.
 
-**Is it allowed where I work?**
+### Is it allowed where I work?
+
 TypeShuttle types what you could type by hand and does not change any remote desktop settings. Follow your organization's policies on what you bring into remote sessions. If your browser is managed, extension installs may need approval from your administrator.
 
 ## Documentation
@@ -113,7 +151,9 @@ TypeShuttle types what you could type by hand and does not change any remote des
 
 ## Contributing
 
-Bug reports, client compatibility reports and pull requests are welcome. Read [CONTRIBUTING.md](.github/CONTRIBUTING.md) first. Report security issues privately as described in [SECURITY.md](.github/SECURITY.md).
+Bug reports, client compatibility reports and pull requests are welcome. Read [CONTRIBUTING.md](.github/CONTRIBUTING.md) first. Report security issues privately as described in [SECURITY.md](.github/SECURITY.md). Questions and ideas go to [Discussions](https://github.com/shengwei-peng/typeshuttle/discussions).
+
+If TypeShuttle saves you time, a ⭐ on GitHub helps other people with the same problem find it.
 
 ## License
 

@@ -1,0 +1,248 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Remote desktop</title>
+  <style>
+    :root {
+      --desk-top: #1d2b3a;
+      --desk-bottom: #0f1720;
+      --window: #10151c;
+      --window-bar: #1b232e;
+      --text: #d7dee8;
+      --muted: #8794a6;
+      --prompt: #7ee0b8;
+      --path: #7fb4ff;
+      --hash: #ffd479;
+      --card: #ffffff;
+      --card-text: #1d2430;
+      --accent: #2bb3c0;
+    }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      font: 15px/1.5 "Noto Sans", "Noto Sans CJK TC", system-ui, sans-serif;
+      background: linear-gradient(160deg, var(--desk-top), var(--desk-bottom));
+      color: var(--text);
+      overflow: hidden;
+    }
+    .window {
+      position: absolute;
+      inset: 28px 28px 76px 28px;
+      display: flex;
+      flex-direction: column;
+      border-radius: 10px;
+      background: var(--window);
+      box-shadow: 0 24px 60px rgb(0 0 0 / 45%);
+      overflow: hidden;
+    }
+    .bar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      height: 34px;
+      padding: 0 14px;
+      background: var(--window-bar);
+      color: var(--muted);
+      font-size: 13px;
+    }
+    .dot { width: 11px; height: 11px; border-radius: 50%; background: #3a4554; }
+    .bar .title { margin-left: 8px; }
+    .bar .badge {
+      margin-left: auto;
+      padding: 1px 8px;
+      border-radius: 999px;
+      background: rgb(255 120 120 / 14%);
+      color: #ff9b9b;
+      font-size: 12px;
+    }
+    .screen { position: relative; flex: 1; }
+    #CitrixRenderCanvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+    #terminal {
+      position: absolute;
+      inset: 0;
+      margin: 0;
+      padding: 14px 18px;
+      font: 14px/1.55 "JetBrains Mono", "Noto Sans Mono", "Noto Sans Mono CJK TC", monospace;
+      white-space: pre-wrap;
+      overflow: hidden;
+      pointer-events: none;
+    }
+    #terminal .prompt { color: var(--prompt); }
+    #terminal .path { color: var(--path); }
+    #terminal .hash { color: var(--hash); }
+    #terminal .cursor { display: inline-block; width: 8px; height: 1.1em; vertical-align: text-bottom; background: var(--text); }
+    #CitrixClientImeBuffer { position: absolute; left: 20px; top: 20px; width: 0; height: 14px; overflow: hidden; white-space: nowrap; }
+    .card {
+      position: absolute;
+      left: 52px;
+      top: 92px;
+      width: 420px;
+      padding: 14px 16px;
+      border-radius: 10px;
+      background: var(--card);
+      color: var(--card-text);
+      box-shadow: 0 16px 40px rgb(0 0 0 / 40%);
+      opacity: 0;
+      transform: translateY(8px);
+      transition: opacity 250ms ease, transform 250ms ease;
+    }
+    .card.visible { opacity: 1; transform: none; }
+    .card .label { margin-bottom: 8px; color: #5b6575; font-size: 12px; font-weight: 600; letter-spacing: 0.02em; }
+    .card pre { margin: 0; font: 13px/1.5 "JetBrains Mono", "Noto Sans Mono", "Noto Sans Mono CJK TC", monospace; white-space: pre-wrap; }
+    .caption {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 18px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+      font-size: 16px;
+      color: #e8eef6;
+    }
+    .caption kbd {
+      padding: 2px 9px;
+      border: 1px solid rgb(255 255 255 / 30%);
+      border-bottom-width: 3px;
+      border-radius: 6px;
+      background: rgb(255 255 255 / 8%);
+      font: 600 14px/1.4 "Noto Sans", system-ui, sans-serif;
+    }
+    .note { position: absolute; right: 30px; bottom: 22px; color: var(--muted); font-size: 11px; }
+  </style>
+</head>
+<body>
+  <div class="window">
+    <div class="bar">
+      <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+      <span class="title" id="window-title"></span>
+      <span class="badge" id="window-badge"></span>
+    </div>
+    <div class="screen">
+      <canvas id="CitrixRenderCanvas"></canvas>
+      <pre id="terminal"></pre>
+      <span id="CitrixClientImeBuffer" contenteditable="true"></span>
+    </div>
+  </div>
+  <div class="card" id="card">
+    <div class="label" id="card-label"></div>
+    <pre id="card-text"></pre>
+  </div>
+  <div class="caption" id="caption"></div>
+  <div class="note" id="note"></div>
+  <script>
+    (() => {
+      const STRINGS = {
+        en: { title: 'Remote desktop session', badge: 'Clipboard disabled', card: 'Copied on your computer', note: 'Simulated session' },
+        zh: { title: '遠端桌面工作階段', badge: '剪貼簿已停用', card: '在本機複製的內容', note: '模擬的工作階段' },
+      };
+      const lang = new URLSearchParams(location.search).get('lang') === 'zh' ? 'zh' : 'en';
+      const strings = STRINGS[lang];
+      document.documentElement.lang = lang === 'zh' ? 'zh-Hant' : 'en';
+      document.getElementById('window-title').textContent = strings.title;
+      document.getElementById('window-badge').textContent = strings.badge;
+      document.getElementById('card-label').textContent = strings.card;
+      document.getElementById('note').textContent = strings.note;
+
+      const PROMPT_USER = 'user@remote';
+      const buffer = document.getElementById('CitrixClientImeBuffer');
+      const terminal = document.getElementById('terminal');
+      const files = new Map();
+      const history = [];
+      let current = '';
+      let swallowNextInput = false;
+      let heredoc = null;
+
+      const escapeHtml = (value) => value.replace(/[&<>]/g, (ch) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' })[ch]);
+      const promptHtml = () => `<span class="prompt">${PROMPT_USER}</span>:<span class="path">~</span>$ `;
+      const render = () => {
+        const live = heredoc ? `&gt; ${escapeHtml(current)}` : `${promptHtml()}${escapeHtml(current)}`;
+        const lines = [...history, `${live}<span class="cursor"></span>`];
+        terminal.innerHTML = lines.join('\n');
+        const overflow = terminal.scrollHeight - terminal.clientHeight;
+        if (overflow > 0) terminal.scrollTop = overflow;
+      };
+
+      const decodeFile = async (lines) => {
+        const binary = atob(lines.join(''));
+        const bytes = Uint8Array.from(binary, (ch) => ch.charCodeAt(0));
+        const stream = new Blob([bytes]).stream().pipeThrough(new DecompressionStream('gzip'));
+        return new Uint8Array(await new Response(stream).arrayBuffer());
+      };
+      const sha256 = async (bytes) => [...new Uint8Array(await crypto.subtle.digest('SHA-256', bytes))]
+        .map((byte) => byte.toString(16).padStart(2, '0')).join('');
+
+      const run = async (line) => {
+        const start = /^mkdir -p \S+ && base64 -d <<'(\w+)' \| gunzip > (\S+)$/.exec(line) ?? /^cat > (\S+) <<'(\w+)'$/.exec(line);
+        if (start) {
+          heredoc = line.startsWith('mkdir')
+            ? { delimiter: start[1], path: start[2], lines: [], base64: true }
+            : { delimiter: start[2], path: start[1], lines: [], base64: false };
+          return;
+        }
+        const check = /^sha256sum (\S+)$/.exec(line);
+        if (check && files.has(check[1])) {
+          history.push(`<span class="hash">${await sha256(files.get(check[1]))}</span>  ${escapeHtml(check[1])}`);
+        }
+      };
+
+      const commit = async () => {
+        const line = current;
+        current = '';
+        if (heredoc) {
+          history.push(`&gt; ${escapeHtml(line)}`);
+          if (line === heredoc.delimiter) {
+            const { path, lines, base64 } = heredoc;
+            heredoc = null;
+            files.set(path, base64 ? await decodeFile(lines) : new TextEncoder().encode(`${lines.join('\n')}\n`));
+          } else {
+            heredoc.lines.push(line);
+          }
+        } else {
+          history.push(`${promptHtml()}${escapeHtml(line)}`);
+          await run(line);
+        }
+        render();
+      };
+
+      buffer.addEventListener('keydown', (event) => {
+        swallowNextInput = true;
+        if (event.key === 'Enter' && event.keyCode === 13) commit();
+      });
+      buffer.addEventListener('input', () => {
+        const data = buffer.textContent;
+        buffer.textContent = '';
+        if (swallowNextInput) {
+          swallowNextInput = false;
+          return;
+        }
+        current += data.replace(/\n/g, '');
+        render();
+      });
+
+      window.demo = {
+        showCard(text) {
+          document.getElementById('card-text').textContent = text;
+          document.getElementById('card').classList.add('visible');
+        },
+        hideCard() {
+          document.getElementById('card').classList.remove('visible');
+        },
+        caption(parts) {
+          const caption = document.getElementById('caption');
+          caption.replaceChildren(...parts.map((part) => {
+            const element = document.createElement(part.key ? 'kbd' : 'span');
+            element.textContent = part.key ?? part.text;
+            return element;
+          }));
+        },
+      };
+      render();
+      buffer.focus();
+    })();
+  </script>
+</body>
+</html>

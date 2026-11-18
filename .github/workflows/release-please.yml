@@ -50,3 +50,12 @@ jobs:
         run: |
           gh release upload ${{ steps.release.outputs.tag_name }} release/*.zip --clobber
 
+      - name: Format Release Notes
+        if: ${{ steps.release.outputs.releases_created == 'true' && steps.release.outputs.tag_name != '' }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ steps.release.outputs.tag_name }}
+        run: |
+          gh release view "$TAG" --json body --jq .body > release/notes-generated.md
+          node scripts/release-notes.mjs --tag "$TAG" --zip release/*.zip < release/notes-generated.md > release/notes.md
+          if [ -s release/notes.md ]; then gh release edit "$TAG" --notes-file release/notes.md; fi
